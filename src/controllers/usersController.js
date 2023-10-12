@@ -52,8 +52,15 @@ async login(req, res) {
     // Combine the provided password with the stored salt
     const combinedPassword = password + user.salt;
 
+    console.log('Provided password:', password);
+    console.log('Stored salt:', user.salt);
+    console.log('Combined password:', combinedPassword);
+
     // Hash the combined password and salt
     const hashedPassword = await hashPassword(combinedPassword, user.salt);
+
+    console.log('Hashed password:', hashedPassword);
+    console.log('Stored hashed password:', user.password_hash);
 
     // Compare the resulting hash with the stored hashed password
     const validPassword = hashedPassword === user.password_hash;
