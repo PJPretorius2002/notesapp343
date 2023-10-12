@@ -56,9 +56,17 @@ class UsersController {
       console.log('Stored hashed password:', user.password_hash);
       console.log('Password comparison result:', hashedPassword == user.password_hash);
 
-      if ((hashedPassword - user.password_hash) ==  0) {
+	bcrypt.compare(password, user.password_hash, (err, isMatch) => {
+ 	 if (err) {
+ 	   throw err;
+ 	 }
+
+	  if (isMatch) {
+ 	   console.log('Password is correct. User is authenticated.');
+ 	 } else {
         return res.status(400).json({ message: 'Invalid email or password.' });
-      }
+ 	 }
+	});
 
       // Password is valid, create a JWT token
       const token = jwt.sign({ _id: user.user_id }, 'YourSecretKey', { expiresIn: '1h' });
