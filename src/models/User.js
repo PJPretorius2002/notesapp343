@@ -5,15 +5,15 @@ class User {
   constructor(username, email, password_hash) {
     this.username = username;
     this.email = email;
-    this.password = password;
+    this.password_hash = password_hash;
   }
 
   async save() {
     try {
       const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(this.password, salt);
+      const hashedPassword = await bcrypt.hash(this.password_hash, salt);
 
-      await db.none('INSERT INTO users(username, email, password) VALUES($1, $2, $3)', [
+      await db.none('INSERT INTO users(username, email, password_hash) VALUES($1, $2, $3)', [
         this.username,
         this.email,
         hashedPassword,
