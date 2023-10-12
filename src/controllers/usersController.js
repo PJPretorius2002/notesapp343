@@ -45,6 +45,9 @@ async login(req, res) {
     // Compare the provided password directly with the stored hash
     const validPassword = password === user.password_hash;
 
+    console.log('Provided password:', password);
+    console.log('Stored hashed password:', user.password_hash);
+
     console.log('Password comparison result:', validPassword);
 
     if (!validPassword) {
