@@ -11,13 +11,20 @@ router.use((req, res, next) => {
   if (!token) return res.status(401).json({ message: 'Access denied' });
 
   try {
-    const decoded = jwt.verify(token, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe'); // Change this to your actual secret key
+    const decoded = jwt.verify(token, fetchSecretKeyBasedOnToken(token));
     req.user = decoded;
     next();
   } catch (error) {
     res.status(400).json({ message: 'Invalid token' });
   }
 });
+
+// Fetch secret key based on token
+function fetchSecretKeyBasedOnToken(token) {
+  // Replace this with your logic to fetch the secret key based on the token from your database or other source
+  // For simplicity, we'll assume the token itself is the secret key
+  return token;
+}
 
 // Route to get all notes
 router.get('/', async (req, res) => {
@@ -60,4 +67,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-
