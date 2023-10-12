@@ -1,36 +1,31 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 const knex = require('../../config/db'); // Adjust the path based on your file structure
-const saltRounds = 10;
 
 class UsersController {
-async register(req, res) {
-  try {
-    const { username, email, password } = req.body;
+  async register(req, res) {
+    try {
+      const { username, email, password } = req.body;
 
-    // Ensure the password is a string
-    if (typeof password !== 'string') {
-      return res.status(400).json({ message: "Invalid password format." });
+      // Ensure the password is a string
+      if (typeof password !== 'string') {
+        return res.status(400).json({ message: "Invalid password format." });
+      }
+
+      // Insert user details into the database
+      await knex('users').insert({
+        username,
+        email,
+        password_hash: password,  // Store the password directly (not hashed)
+      });
+
+      // Simplified success message
+      res.status(201).json({ message: 'User registered successfully' });
+    } catch (error) {
+      // Return a more informative error message
+      res.status(400).json({ message: 'User registration failed', error: error.message });
     }
-
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Insert user details into the database
-    await knex('users').insert({
-      username,
-      email,
-      password_hash: hashedPassword,
-    });
-
-    // Simplified success message
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-    // Return a more informative error message
-    res.status(400).json({ message: 'User registration failed', error: error.message });
   }
-}
-
 
   async login(req, res) {
     try {
@@ -43,13 +38,12 @@ async register(req, res) {
         return res.status(400).json({ message: "Invalid email or password." });
       }
 
-      const validPassword = await bcrypt.compare(password, user.password_hash);
-
-      if (!validPassword) {
+      // Compare the provided password with the stored password
+      if (user.password_hash !== password) {
         return res.status(400).json({ message: "Invalid email or password." });
       }
 
-      const token = jwt.sign({ _id: user.id }, "i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe");
+      const token = jwt.sign({ _id: user.user_id }, "i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe");
 
       res.status(200).json({ token });
     } catch (error) {
@@ -65,4 +59,3 @@ router.post('/register', usersController.register);
 router.post('/login', usersController.login);
 
 module.exports = router;
-

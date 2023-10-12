@@ -1,10 +1,8 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 const knex = require('../../config/db'); // Adjust the path accordingly
 
 const router = express.Router();
-const saltRounds = 10;
 
 // Route to register a new user
 router.post('/register', async (req, res) => {
@@ -12,14 +10,11 @@ router.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
     // Insert user details into the database
     const [userId] = await knex('users').insert({
       username,
       email,
-      password: hashedPassword,
+      password,  // Store the password directly (not hashed)
     });
 
     // Create a JWT token
@@ -34,4 +29,3 @@ router.post('/register', async (req, res) => {
 });
 
 module.exports = router;
-

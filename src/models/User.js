@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt');
 const db = require('../../config/db');
 
 class User {
@@ -10,13 +9,10 @@ class User {
 
   async save() {
     try {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(this.password, salt);
-
       await db.none('INSERT INTO users(username, email, password_hash) VALUES($1, $2, $3)', [
         this.username,
         this.email,
-        hashedPassword,
+        this.password,  // Store the password directly (not hashed)
       ]);
     } catch (error) {
       throw new Error('Error saving user: ' + error.message);
@@ -34,4 +30,3 @@ class User {
 }
 
 module.exports = User;
-
