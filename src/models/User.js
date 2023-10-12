@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const db = require('../config/db');
 
 class User {
-  constructor(username, email, password) {
+  constructor(username, email, password_hash) {
     this.username = username;
     this.email = email;
     this.password = password;
