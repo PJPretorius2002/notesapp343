@@ -16,11 +16,15 @@ class UsersController {
       // Hash the password using bcrypt
       const hashedPassword = await bcrypt.hash(password, 10);
 
+      // Generate a salt for logging purposes (not for storage)
+      const salt = await bcrypt.genSalt(10);
+
       // Insert user details into the database
       await knex('users').insert({
         username,
         email,
         password_hash: hashedPassword,
+        salt: salt,  // Include the salt for logging purposes
       });
 
       res.status(201).json({ message: 'User registered successfully' });
@@ -41,8 +45,17 @@ class UsersController {
         return res.status(400).json({ message: 'Invalid email or password.' });
       }
 
-      // Compare the provided password with the hashed password in the database
-      const validPassword = await bcrypt.compare(password, user.password_hash);
+      // Log the salt for this user
+      console.log('Stored salt:', user.salt);
+
+      // Combine the provided password with the stored salt
+      const combinedPassword = password + user.salt;
+
+      // Hash the combined password and salt
+      const hashedPassword = await bcrypt.hash(combinedPassword, 10);
+
+      // Compare the resulting hash with the hashed password in the database
+      const validPassword = hashedPassword === user.password_hash;
 
       console.log('Provided password:', password);
       console.log('Stored hashed password:', user.password_hash);
