@@ -66,6 +66,7 @@ class UsersController {
 	  if (isMatch) {
  	   console.log('Password is correct. User is authenticated.');
  	 } else {
+	  console.log('Password is wrong');
 	  failure = true;
  	 }
 	});
