@@ -13,21 +13,21 @@ class UsersController {
         return res.status(400).json({ message: "Invalid password format." });
       }
 
-      // Generate a unique salt
-      const salt = await generateSalt(16);
+      // Generate a unique salt (you can use your own salt generation logic)
+      const salt = generateSalt(16);
 
       // Combine the salt with the password
       const combinedPassword = password + salt;
 
-      // Hash the combined password and salt
-      const hashedPassword = await bcrypt.hash(combinedPassword, 10); // Use appropriate salt rounds
+      // Hash the combined password and salt using bcrypt
+      const hashedPassword = await hashPassword(combinedPassword, salt);
 
-      // Store the hashed password and salt in the database
+      // Insert user details into the database
       await knex('users').insert({
         username,
         email,
         password_hash: hashedPassword,
-        salt,
+        salt: salt, // Store the salt in the database
       });
 
       // Simplified success message
@@ -42,8 +42,12 @@ class UsersController {
     try {
       const { email, password } = req.body;
 
+      console.log('Login request for:', email, password);
+
       // Retrieve user from the database by email
       const user = await knex('users').where({ email }).first();
+
+      console.log('Retrieved user:', user);
 
       if (!user) {
         return res.status(400).json({ message: "Invalid email or password." });
@@ -52,18 +56,17 @@ class UsersController {
       // Combine the provided password with the stored salt
       const combinedPassword = password + user.salt;
 
-      // Hash the combined password and salt
-      const hashedPassword = await bcrypt.hash(combinedPassword, 10); // Use appropriate salt rounds
-
-
-
+      // Hash the combined password and salt using bcrypt
+      const hashedPassword = await hashPassword(combinedPassword, user.salt);
 
       // Compare the resulting hash with the stored hashed password
       const validPassword = hashedPassword === user.password_hash;
 
       console.log('Provided password:', password);
       console.log('Stored hashed password:', user.password_hash);
-
+      console.log('Salt:', user.salt);
+      console.log('Combined password:', combinedPassword);
+      console.log('Hashed password:', hashedPassword);
       console.log('Password comparison result:', validPassword);
 
       if (!validPassword) {
@@ -80,8 +83,14 @@ class UsersController {
   }
 }
 
+// Hash the password using bcrypt
+async function hashPassword(password, salt) {
+  const hashedPassword = await bcrypt.hash(password, 10); // Use appropriate salt rounds
+  return hashedPassword;
+}
+
 // Replace with your actual salt generation logic
-async function generateSalt(length) {
+function generateSalt(length) {
   const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let salt = '';
   for (let i = 0; i < length; i++) {
