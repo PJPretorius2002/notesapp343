@@ -43,7 +43,7 @@ async register(req, res) {
         return res.status(400).json({ message: "Invalid email or password." });
       }
 
-      const validPassword = await bcrypt.compare(password, user.password);
+      const validPassword = await bcrypt.compare(password, user.password_hash);
 
       if (!validPassword) {
         return res.status(400).json({ message: "Invalid email or password." });
