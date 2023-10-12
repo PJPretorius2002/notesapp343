@@ -57,9 +57,9 @@ class UsersController {
       console.log('Password comparison result:', hashedPassword == user.password_hash);
 
 	var failure = false;
-	var isCorrect;
+	var num = 0;
 
-	isCorrect = bcrypt.compare(password, user.password_hash, (err, isMatch) => {
+	bcrypt.compare(password, user.password_hash, (err, isMatch) => {
  	 if (err) {
  	   throw err;
  	 }
@@ -68,10 +68,11 @@ class UsersController {
  	   console.log('Password is correct. User is authenticated.');
  	 } else {
 	  console.log('Password is wrong');
+	  num = 1;
  	 }
 	});
 
-	if (!isCorrect){
+	if (num == 1){
 	   return res.status(400).json({ message: 'Invalid email or password.' });
 	}
 
