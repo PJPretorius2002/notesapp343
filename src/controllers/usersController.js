@@ -55,7 +55,7 @@ class UsersController {
       console.log('Stored hashed password:', user.password_hash);
       console.log('Password comparison result:', hashedPassword == user.password_hash);
 
-      if (!hashedPassword.localeCompare(user.password_hash)) {
+      if ((hashedPassword - user.password_hash) ==  0) {
         return res.status(400).json({ message: 'Invalid email or password.' });
       }
 
