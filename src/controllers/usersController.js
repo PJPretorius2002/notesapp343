@@ -48,11 +48,8 @@ class UsersController {
       // Log the salt for this user
       console.log('Stored salt:', user.salt);
 
-      // Combine the provided password with the stored salt
-      const combinedPassword = password + user.salt;
-
       // Hash the combined password and salt
-      const hashedPassword = await bcrypt.hash(password, 60);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       // Compare the resulting hash with the hashed password in the database
       const validPassword = hashedPassword === user.password_hash;
