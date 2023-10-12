@@ -48,33 +48,38 @@ class UsersController {
     }
   }
 
-  async login(req, res) {
-    try {
-      const { email, password } = req.body;
+async login(req, res) {
+  try {
+    const { email, password } = req.body;
 
-      // Retrieve user from the database by email
-      const user = await knex('users').where({ email }).first();
+    // Retrieve user from the database by email
+    const user = await knex('users').where({ email }).first();
 
-      if (!user) {
-        return res.status(400).json({ message: "Invalid email or password." });
-      }
-
-      // Hash the provided password with the stored salt and compare
-      const hashedPassword = await hashPassword(password, user.salt);
-      const validPassword = hashedPassword === user.password_hash;
-
-      if (!validPassword) {
-        return res.status(400).json({ message: "Invalid email or password." });
-      }
-
-      const token = jwt.sign({ _id: user.user_id }, "YourSecretKey", { expiresIn: '1h' });
-
-      res.status(200).json({ token });
-    } catch (error) {
-      console.error('Login error:', error);
-      res.status(400).json({ message: error.message });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email or password." });
     }
+
+    // Combine the provided password with the stored salt
+    const combinedPassword = password + user.salt;
+
+    // Hash the combined password and salt
+    const hashedPassword = await hashPassword(combinedPassword, user.salt);
+
+    // Compare the resulting hash with the stored hashed password
+    const validPassword = hashedPassword === user.password_hash;
+
+    if (!validPassword) {
+      return res.status(400).json({ message: "Invalid email or password." });
+    }
+
+    const token = jwt.sign({ _id: user.user_id }, "YourSecretKey", { expiresIn: '1h' });
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(400).json({ message: error.message });
   }
+ }
 }
 
 const usersController = new UsersController();
