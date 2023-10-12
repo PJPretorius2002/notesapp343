@@ -4,7 +4,10 @@ if (process.env.DATABASE_URL) {
   // Heroku PostgreSQL configuration
   knexConfig = {
     client: 'pg',
-    connection: process.env.DATABASE_URL,
+    connection: {
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }, // Add this to handle SSL correctly
+    },
   };
 } else {
   // Local PostgreSQL configuration

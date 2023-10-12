@@ -4,6 +4,7 @@ const socketIo = require('socket.io');
 const notesRouter = require('./src/controllers/notesController');
 const usersController = require('./src/controllers/usersController');
 const jwt = require('jsonwebtoken');
+const db = require('./config/db.js');  // Update this with the correct path
 
 const app = express();
 const server = http.createServer(app);
@@ -45,9 +46,14 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+
+// Use the knex instance for the database connection
+db.raw('SELECT 1+1 AS result').then(() => {
+  server.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
+  });
+}).catch((err) => {
+  console.error('Error connecting to the database:', err);
 });
 
 module.exports = app;
-
