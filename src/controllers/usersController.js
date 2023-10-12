@@ -27,29 +27,38 @@ class UsersController {
     }
   }
 
-  async login(req, res) {
-    try {
-      const { email, password } = req.body;
+async login(req, res) {
+  try {
+    const { email, password } = req.body;
 
-      // Retrieve user from the database by email
-      const user = await knex('users').where({ email }).first();
+    console.log('Login request for:', email, password);
 
-      if (!user) {
-        return res.status(400).json({ message: "Invalid email or password." });
-      }
+    // Retrieve user from the database by email
+    const user = await knex('users').where({ email }).first();
 
-      // Compare the provided password with the stored password
-      if (user.password_hash !== password) {
-        return res.status(400).json({ message: "Invalid email or password." });
-      }
+    console.log('Retrieved user:', user);
 
-      const token = jwt.sign({ _id: user.user_id }, "i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe");
-
-      res.status(200).json({ token });
-    } catch (error) {
-      res.status(400).json({ message: error.message });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email or password." });
     }
+
+    // Compare the provided password directly with the stored hash
+    const validPassword = password === user.password_hash;
+
+    console.log('Password comparison result:', validPassword);
+
+    if (!validPassword) {
+      return res.status(400).json({ message: "Invalid email or password." });
+    }
+
+    const token = jwt.sign({ _id: user.id }, "i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe");
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(400).json({ message: error.message });
   }
+ }
 }
 
 const usersController = new UsersController();
