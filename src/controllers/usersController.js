@@ -1,6 +1,6 @@
-const bcrypt = require('bcrypt');
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const knex = require('../../config/db'); // Adjust the path based on your file structure
 
 class UsersController {
@@ -10,27 +10,21 @@ class UsersController {
 
       // Ensure the password is a string
       if (typeof password !== 'string') {
-        return res.status(400).json({ message: "Invalid password format." });
+        return res.status(400).json({ message: 'Invalid password format.' });
       }
 
-      // Generate a salt
-      const salt = await bcrypt.genSalt(10);
-
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, salt);
+      // Hash the password using bcrypt
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       // Insert user details into the database
       await knex('users').insert({
         username,
         email,
         password_hash: hashedPassword,
-        salt: salt,
       });
 
-      // Simplified success message
       res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
-      // Return a more informative error message
       res.status(400).json({ message: 'User registration failed', error: error.message });
     }
   }
@@ -43,25 +37,21 @@ class UsersController {
       const user = await knex('users').where({ email }).first();
 
       if (!user) {
-        return res.status(400).json({ message: "Invalid email or password." });
+        return res.status(400).json({ message: 'Invalid email or password.' });
       }
 
-      // Compare the provided password with the hashed password from the database
+      // Compare the provided password with the hashed password in the database
       const validPassword = await bcrypt.compare(password, user.password_hash);
 
-      console.log('Provided password:', password);
-      console.log('Stored hashed password:', user.password_hash);
-      console.log('Password comparison result:', validPassword);
-
       if (!validPassword) {
-        return res.status(400).json({ message: "Invalid email or password." });
+        return res.status(400).json({ message: 'Invalid email or password.' });
       }
 
-      const token = jwt.sign({ _id: user.user_id }, "YourSecretKey", { expiresIn: '1h' });
+      // Password is valid, create a JWT token
+      const token = jwt.sign({ _id: user.user_id }, 'YourSecretKey', { expiresIn: '1h' });
 
       res.status(200).json({ token });
     } catch (error) {
-      console.error('Login error:', error);
       res.status(400).json({ message: error.message });
     }
   }
