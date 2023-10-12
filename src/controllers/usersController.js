@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const knex = require('../../config/db'); // Adjust the path based on your file structure
 
 class UsersController {
@@ -12,14 +13,21 @@ class UsersController {
         return res.status(400).json({ message: "Invalid password format." });
       }
 
-      // Hash the password using the same method as in the database
-      const hashedPassword = hashPassword(password);
+      // Generate a unique salt
+      const salt = await generateSalt(16);
 
-      // Insert user details into the database
+      // Combine the salt with the password
+      const combinedPassword = password + salt;
+
+      // Hash the combined password and salt
+      const hashedPassword = await bcrypt.hash(combinedPassword, 10); // Use appropriate salt rounds
+
+      // Store the hashed password and salt in the database
       await knex('users').insert({
         username,
         email,
         password_hash: hashedPassword,
+        salt,
       });
 
       // Simplified success message
@@ -34,25 +42,21 @@ class UsersController {
     try {
       const { email, password } = req.body;
 
-      console.log('Login request for:', email, password);
-
       // Retrieve user from the database by email
       const user = await knex('users').where({ email }).first();
-
-      console.log('Retrieved user:', user);
 
       if (!user) {
         return res.status(400).json({ message: "Invalid email or password." });
       }
 
-      // Use the same password hashing method as in the database to compare
-      const hashedPassword = hashPassword(password);
+      // Combine the provided password with the stored salt
+      const combinedPassword = password + user.salt;
+
+      // Hash the combined password and salt
+      const hashedPassword = await bcrypt.hash(combinedPassword, 10); // Use appropriate salt rounds
+
+      // Compare the resulting hash with the stored hashed password
       const validPassword = hashedPassword === user.password_hash;
-
-      console.log('Provided password:', password);
-      console.log('Stored hashed password:', user.password_hash);
-
-      console.log('Password comparison result:', validPassword);
 
       if (!validPassword) {
         return res.status(400).json({ message: "Invalid email or password." });
@@ -68,25 +72,14 @@ class UsersController {
   }
 }
 
-// Hash the password using the same method as in the database
-function hashPassword(password) {
-  const salt = generateSalt(16);
-  return hash_password(password, salt);
-}
-
 // Replace with your actual salt generation logic
-function generateSalt(length) {
+async function generateSalt(length) {
   const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let salt = '';
   for (let i = 0; i < length; i++) {
     salt += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return salt;
-}
-
-// Function to hash passwords using the same method as in the database
-function hash_password(password, salt) {
-  return crypt(password, salt);
 }
 
 const usersController = new UsersController();
