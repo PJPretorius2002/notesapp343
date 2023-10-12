@@ -13,21 +13,18 @@ class UsersController {
         return res.status(400).json({ message: "Invalid password format." });
       }
 
-      // Generate a unique salt (you can use your own salt generation logic)
-      const salt = generateSalt(16);
+      // Generate a salt
+      const salt = await generateSalt(16);
 
-      // Combine the salt with the password
-      const combinedPassword = password + salt;
-
-      // Hash the combined password and salt using bcrypt
-      const hashedPassword = await hashPassword(combinedPassword, salt);
+      // Hash the password using bcrypt with the salt
+      const hashedPassword = await hashPassword(password, salt);
 
       // Insert user details into the database
       await knex('users').insert({
         username,
         email,
         password_hash: hashedPassword,
-        salt: salt, // Store the salt in the database
+        salt,
       });
 
       // Simplified success message
@@ -38,55 +35,52 @@ class UsersController {
     }
   }
 
-async login(req, res) {
-  try {
-    const { email, password } = req.body;
+  async login(req, res) {
+    try {
+      const { email, password } = req.body;
 
-    // Retrieve user from the database by email
-    const user = await knex('users').where({ email }).first();
+      // Retrieve user from the database by email
+      const user = await knex('users').where({ email }).first();
 
-    if (!user) {
-      return res.status(400).json({ message: "Invalid email or password." });
+      if (!user) {
+        return res.status(400).json({ message: "Invalid email or password." });
+      }
+
+      // Combine the provided password with the stored salt
+      const combinedPassword = password + user.salt;
+
+      // Hash the combined password and salt
+      const hashedPasswordProvided = await hashPassword(combinedPassword, user.salt);
+
+      console.log('Provided password:', combinedPassword);
+      console.log('Stored hashed password:', user.password_hash);
+      console.log('Hashed password provided:', hashedPasswordProvided);
+
+      // Compare the hashed password provided with the stored hashed password
+      const validPassword = hashedPasswordProvided === user.password_hash;
+
+      if (!validPassword) {
+        return res.status(400).json({ message: "Invalid email or password." });
+      }
+
+      const token = jwt.sign({ _id: user.user_id }, "YourSecretKey", { expiresIn: '1h' });
+
+      res.status(200).json({ token });
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(400).json({ message: error.message });
     }
-
-    // Combine the provided password with the stored salt
-    const combinedPassword = password + user.salt;
-
-    console.log('Provided password:', password);
-    console.log('Stored salt:', user.salt);
-    console.log('Combined password:', combinedPassword);
-
-    // Hash the combined password and salt
-    const hashedPassword = await hashPassword(combinedPassword, user.salt);
-
-    console.log('Hashed password:', hashedPassword);
-    console.log('Stored hashed password:', user.password_hash);
-
-    // Compare the resulting hash with the stored hashed password
-    const validPassword = hashedPassword === user.password_hash;
-
-    if (!validPassword) {
-      return res.status(400).json({ message: "Invalid email or password." });
-    }
-
-    const token = jwt.sign({ _id: user.user_id }, "YourSecretKey", { expiresIn: '1h' });
-
-    res.status(200).json({ token });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(400).json({ message: error.message });
   }
- }
 }
 
-// Hash the password using bcrypt
+// Function to hash passwords using bcrypt
 async function hashPassword(password, salt) {
-  const hashedPassword = await bcrypt.hash(password, 10); // Use appropriate salt rounds
+  const hashedPassword = await bcrypt.hash(password, salt);
   return hashedPassword;
 }
 
 // Replace with your actual salt generation logic
-function generateSalt(length) {
+async function generateSalt(length) {
   const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let salt = '';
   for (let i = 0; i < length; i++) {
