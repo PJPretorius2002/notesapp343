@@ -1,8 +1,16 @@
-const knex = require('knex');
-const knexConfig = require('../knexfile'); // Adjust the path accordingly
+let knexConfig;
 
-const environment = process.env.NODE_ENV || 'development';
-const db = knex(knexConfig[environment]);
+if (process.env.DATABASE_URL) {
+  // Heroku PostgreSQL configuration
+  knexConfig = {
+    client: 'pg',
+    connection: process.env.DATABASE_URL,
+  };
+} else {
+  // Local PostgreSQL configuration
+  knexConfig = require('../knexfile')[process.env.NODE_ENV || 'development'];
+}
 
-module.exports = db;
+const knexInstance = require('knex')(knexConfig);
 
+module.exports = knexInstance;
