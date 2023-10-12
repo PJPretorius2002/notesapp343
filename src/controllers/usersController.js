@@ -20,7 +20,7 @@ async register(req, res) {
     await knex('users').insert({
       username,
       email,
-      password: hashedPassword,
+      password_hash: hashedPassword,
     });
 
     // Simplified success message
