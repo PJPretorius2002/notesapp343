@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const knex = require('../config/db'); // Adjust the path accordingly
+const knex = require('../../config/db'); // Adjust the path accordingly
 
 const router = express.Router();
 const saltRounds = 10;
