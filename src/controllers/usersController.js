@@ -33,45 +33,42 @@ class UsersController {
     }
   }
 
-  async login(req, res) {
-    try {
-      const { email, password } = req.body;
+async login(req, res) {
+  try {
+    const { email, password } = req.body;
 
-      // Retrieve user from the database by email
-      const user = await knex('users').where({ email }).first();
+    // Retrieve user from the database by email
+    const user = await knex('users').where({ email }).first();
 
-      if (!user) {
-        console.log('User not found for email:', email);
-        return res.status(400).json({ message: 'Invalid email or password.' });
+    if (!user) {
+      console.log('User not found for email:', email);
+      return res.status(400).json({ message: 'Invalid email or password.' });
+    }
+
+    // Log the salt for this user
+    console.log('Stored salt:', user.salt);
+
+    // Compare the provided password with the hashed password in the database
+    bcrypt.compare(password, user.password_hash, (err, isMatch) => {
+      if (err) {
+        throw err;
       }
 
-      // Log the salt for this user
-      console.log('Stored salt:', user.salt);
-
-      // Hash the combined password and salt
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      console.log('User:', user);
-      console.log('Provided password:', hashedPassword);
-      console.log('Stored hashed password:', user.password_hash);
-      console.log('Password comparison result:', hashedPassword == user.password_hash);
-
-	
-	var success = bcrypt.compare(password, user.password_hash);
-
-	if (!success){
-	   return res.status(400).json({ message: 'Invalid email or password.' });
-	}
-
-      // Password is valid, create a JWT token
-      const token = jwt.sign({ _id: user.user_id }, 'YourSecretKey', { expiresIn: '1h' });
-
-      res.status(200).json({ token });
-    } catch (error) {
-      console.log('Login error:', error);
-      res.status(400).json({ message: error.message });
-    }
+      if (isMatch) {
+        console.log('Password is correct. User is authenticated.');
+        // Password is valid, create a JWT token
+        const token = jwt.sign({ _id: user.user_id }, 'YourSecretKey', { expiresIn: '1h' });
+        res.status(200).json({ token });
+      } else {
+        console.log('Password is wrong');
+        return res.status(400).json({ message: 'Invalid email or password.' });
+      }
+    });
+  } catch (error) {
+    console.log('Login error:', error);
+    res.status(400).json({ message: error.message });
   }
+ }
 }
 
 const usersController = new UsersController();
