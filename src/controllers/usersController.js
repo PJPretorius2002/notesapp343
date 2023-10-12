@@ -37,11 +37,16 @@ class UsersController {
       const user = await knex('users').where({ email }).first();
 
       if (!user) {
+        console.log('User not found for email:', email);
         return res.status(400).json({ message: 'Invalid email or password.' });
       }
 
       // Compare the provided password with the hashed password in the database
       const validPassword = await bcrypt.compare(password, user.password_hash);
+
+      console.log('Provided password:', password);
+      console.log('Stored hashed password:', user.password_hash);
+      console.log('Password comparison result:', validPassword);
 
       if (!validPassword) {
         return res.status(400).json({ message: 'Invalid email or password.' });
@@ -52,6 +57,7 @@ class UsersController {
 
       res.status(200).json({ token });
     } catch (error) {
+      console.log('Login error:', error);
       res.status(400).json({ message: error.message });
     }
   }
