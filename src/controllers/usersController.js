@@ -57,6 +57,7 @@ class UsersController {
       console.log('Password comparison result:', hashedPassword == user.password_hash);
 
 	var failure = false;
+	var isCorrect;
 
 	isCorrect = bcrypt.compare(password, user.password_hash, (err, isMatch) => {
  	 if (err) {
