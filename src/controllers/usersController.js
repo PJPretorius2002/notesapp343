@@ -56,13 +56,15 @@ class UsersController {
       const hashedPassword = await bcrypt.hash(combinedPassword, 10); // Use appropriate salt rounds
 
 
+
+
+      // Compare the resulting hash with the stored hashed password
+      const validPassword = hashedPassword === user.password_hash;
+
       console.log('Provided password:', password);
       console.log('Stored hashed password:', user.password_hash);
 
       console.log('Password comparison result:', validPassword);
-
-      // Compare the resulting hash with the stored hashed password
-      const validPassword = hashedPassword === user.password_hash;
 
       if (!validPassword) {
         return res.status(400).json({ message: "Invalid email or password." });
