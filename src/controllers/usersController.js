@@ -52,7 +52,7 @@ class UsersController {
       const combinedPassword = password + user.salt;
 
       // Hash the combined password and salt
-      const hashedPassword = await bcrypt.hash(combinedPassword, 10);
+      const hashedPassword = await bcrypt.hash(password, 60);
 
       // Compare the resulting hash with the hashed password in the database
       const validPassword = hashedPassword === user.password_hash;
