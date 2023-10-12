@@ -45,8 +45,8 @@ async login(req, res) {
       return res.status(400).json({ message: 'Invalid email or password.' });
     }
 
-    // Log the salt for this user
-    console.log('Stored salt:', user.salt);
+    // Compare the provided email with the stored email
+    const validEmail = email === user.email;
 
     // Compare the provided password with the hashed password in the database
     bcrypt.compare(password, user.password_hash, (err, isMatch) => {
@@ -54,13 +54,13 @@ async login(req, res) {
         throw err;
       }
 
-      if (isMatch) {
-        console.log('Password is correct. User is authenticated.');
+      if (validEmail && isMatch) {
+        console.log('User is authenticated.');
         // Password is valid, create a JWT token
         const token = jwt.sign({ _id: user.user_id }, 'YourSecretKey', { expiresIn: '1h' });
         res.status(200).json({ token });
       } else {
-        console.log('Password is wrong');
+        console.log('Invalid email or password.');
         return res.status(400).json({ message: 'Invalid email or password.' });
       }
     });
