@@ -56,21 +56,28 @@ async login(req, res) {
     const user = await knex('users').where({ email }).first();
 
     if (!user) {
+      console.log('No user found for email:', email);
       return res.status(400).json({ message: "Invalid email or password." });
     }
 
-    // Combine the provided password with the stored salt
-    const combinedPassword = password + user.salt;
+    // Hash the provided password with the stored salt
+    const hashedPassword = await hashPassword(password, user.salt);
 
-    // Hash the combined password and salt
-    const hashedPassword = await hashPassword(combinedPassword, user.salt);
+    console.log('Provided password:', password);
+    console.log('Stored salt:', user.salt);
+    console.log('Combined password:', password + user.salt);
+    console.log('Hashed password:', hashedPassword);
+    console.log('Stored hashed password:', user.password_hash);
 
     // Compare the resulting hash with the stored hashed password
     const validPassword = hashedPassword === user.password_hash;
 
     if (!validPassword) {
+      console.log('Password comparison failed.');
       return res.status(400).json({ message: "Invalid email or password." });
     }
+
+    console.log('Password comparison successful.');
 
     const token = jwt.sign({ _id: user.user_id }, "YourSecretKey", { expiresIn: '1h' });
 
