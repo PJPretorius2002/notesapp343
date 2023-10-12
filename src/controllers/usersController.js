@@ -51,10 +51,7 @@ class UsersController {
       // Hash the combined password and salt
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Compare the resulting hash with the hashed password in the database
-      const validPassword = hashedPassword === user.password_hash;
-
-      console.log('Provided password:', password);
+      console.log('Provided password:', hashedPassword);
       console.log('Stored hashed password:', user.password_hash);
       console.log('Password comparison result:', validPassword);
 
