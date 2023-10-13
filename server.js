@@ -5,6 +5,11 @@ const notesRouter = require('./src/controllers/notesController');
 const usersController = require('./src/controllers/usersController');
 const jwt = require('jsonwebtoken');
 const db = require('./config/db.js');  // Update this with the correct path
+const cors = require('cors'); // Import the cors package
+
+app.use(cors({
+  origin: 'https://notesapp343-front-end-3ef1866fe1d5.herokuapp.com/', // Replace with your front-end domain
+}));
 
 const app = express();
 const server = http.createServer(app);
@@ -50,7 +55,7 @@ const PORT = process.env.PORT || 3000;
 // Use the knex instance for the database connection
 db.raw('SELECT 1+1 AS result').then(() => {
   server.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`);
+    console.log(Server is listening on port ${PORT});
   });
 }).catch((err) => {
   console.error('Error connecting to the database:', err);
