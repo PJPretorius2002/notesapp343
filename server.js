@@ -1,12 +1,11 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const notesRouter = require('./src/controllers/notesController');
+const { router: notesRouter, authenticateToken } = require('./src/controllers/notesController');  // Corrected import
 const usersController = require('./src/controllers/usersController');
 const jwt = require('jsonwebtoken');
 const db = require('./config/db.js');  // Update this with the correct path
 const cors = require('cors'); // Import the cors package
-const { authenticateToken } = require('./src/controllers/notesController');
 
 const app = express();
 const server = http.createServer(app);
@@ -47,7 +46,7 @@ const PORT = process.env.PORT || 3000;
 // Use the knex instance for the database connection
 db.raw('SELECT 1+1 AS result').then(() => {
   server.listen(PORT, () => {
-    console.log('Server is listening on port ${PORT}');
+    console.log(`Server is listening on port ${PORT}`);  // Corrected log statement
   });
 }).catch((err) => {
   console.error('Error connecting to the database:', err);
