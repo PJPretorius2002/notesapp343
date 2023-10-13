@@ -5,31 +5,26 @@ const NotesApi = require('../controllers/notesController'); // Adjust the path a
 const router = express.Router();
 const notesApi = new NotesApi();
 
+
+
 // Middleware to authenticate users
-router.use((req, res, next) => {
-  // Get the token from the request header
-  const token = req.header('Authorization');
+const verifyToken = (req, res, next) => {
+  let token = req.headers['x-access-token'];
 
-  // If there is no token, return an unauthorized response
   if (!token) {
-    return res.status(401).json({ message: 'Access denied' });
+    return res.status(403).json({ message: 'No token provided!' });
   }
 
-  // Try to verify the token
-  try {
-    // Verify the token using your secret key
-    const decoded = jwt.verify(token, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe');
-
-    // Set the user object on the request object
-    req.user = decoded;
-
-    // Next middleware
+  jwt.verify(token, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: 'Unauthorized!' });
+    }
+    req.user = { id: decoded.id }; // Set the user object with user ID from the token
     next();
-  } catch (error) {
-    // If the token is invalid, return a bad request response
-    res.status(400).json({ message: 'Invalid token' });
-  }
-});
+  });
+};
+
+router.use(verifyToken);
 
 // Route to get all notes
 router.get('/', async (req, res) => {
