@@ -16,7 +16,7 @@ async createNote(req) {
     userId = req.user.id;
   } else {
     // Handle the case where user ID is not available (e.g., user not authenticated)
-    return { error: 'User not authenticated' }; // Return an error object
+    return res.status(401).json({ error: 'User not authenticated' }); // Return an error response
   }
 
   const note = {
