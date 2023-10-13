@@ -23,6 +23,7 @@ const authenticateToken = (req, res, next) => {
   if (!token) return res.status(401).json({ message: 'Access denied' });
 
   jwt.verify(token, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', (err, user) => {
+    console.log('Verifying token:', token); // Log the token being verified
     if (err) return res.status(400).json({ message: 'Invalid token' });
     req.user = user;
     next();
