@@ -16,6 +16,7 @@ async createNote(req) {
     userId = req.user.id;
   } else {
     // Handle the case where user ID is not available (e.g., user not authenticated)
+    console.log('Yes I am the problem'); // Log the req.user object
     return { error: 'User not authenticated' }; // Return an error object
   }
 
