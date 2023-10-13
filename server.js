@@ -14,11 +14,11 @@ const io = socketIo(server);
 var username;
 var userid;
 
-var returnUsername() {
+async returnUsername() {
 	return username;
 }
 
-var returnUserId() {
+async returnUserId() {
 	return userid;
 }
 
