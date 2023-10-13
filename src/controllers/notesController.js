@@ -95,13 +95,13 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const note = req.body;
-
-  // Log the received token
-  console.log("Received token:", req.header('Authorization'));
-
-  const newNote = await notesApi.createNote(note);
-  res.status(201).json(newNote);
+  try {
+    const newNote = await notesApi.createNote(req.body);
+    res.status(201).json(newNote);
+  } catch (error) {
+    console.error('Error creating note:', error);
+    res.status(500).json({ error: 'Failed to create note' });
+  }
 });
 
 router.put("/:id", async (req, res) => {
