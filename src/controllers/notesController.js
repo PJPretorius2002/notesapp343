@@ -69,18 +69,15 @@ const authenticateToken = (req, res, next) => {
 
   let decoded;
   try {
-    const decoded = jwt.verify(token, secretKey);
-    console.log('Decoded token:', decoded);  // Log the decoded token
-    req.user = {
-      id: decoded.user_id // Set req.user to an object with the user_id from the token
-    };
+    decoded = jwt.verify(token, secretKey);
+    console.log('Decoded token:', decoded); // Log the decoded token
   } catch (err) {
     console.log('Error verifying token:', err);
     return res.status(400).json({ message: 'Invalid token' });
   }
 
   req.user = decoded; // Set req.user to the decoded token
-  req.userid = decoded.user_id; // Set req.userid to the decoded token's user ID
+  req.user.id = decoded.user_id; // Set req.userid to the decoded token's user ID
   next();
 };
 
