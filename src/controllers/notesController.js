@@ -8,34 +8,11 @@ class NotesApi {
     return notes;
   }
 
-async createNote(req, res) {
-  try {
-    const token = req.header('Authorization');
-    const decoded = jwt.verify(token, secretKey);
-
-    const newNote = {
-      title: req.body.title,
-      content: req.body.content,
-      category_id: req.body.categoryId,
-      owner_id: decoded._id // Assuming the decoded token has user ID in _id field
-    };
-
-    const [newNoteId] = await db('notes').insert(newNote);
-    const createdNote = await db('notes').where('id', newNoteId).first();
-
-    res.status(201).json(createdNote);
-  } catch (error) {
-    console.error('Error creating note:', error);
-    res.status(500).json({ message: 'Error creating note' });
+  async createNote(note) {
+    const [newNoteId] = await db('notes').insert(note); // Adjust the table name accordingly
+    const newNote = await db('notes').where('id', newNoteId).first(); // Adjust the table name accordingly
+    return newNote;
   }
-}
-
-
-function fetchSecretKeyBasedOnToken(token) {
-  return token;
-}
-
-
 
   async updateNote(note) {
     const updatedNote = await db('notes').where('id', note.id).update(note); // Adjust the table name and primary key accordingly

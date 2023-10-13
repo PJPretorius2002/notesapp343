@@ -11,18 +11,13 @@ router.use((req, res, next) => {
   if (!token) return res.status(401).json({ message: 'Access denied' });
 
   try {
-    const decoded = jwt.verify(token, fetchSecretKeyBasedOnToken(token));
+    const decoded = jwt.verify(token, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe'); // Change this to your actual secret key
     req.user = decoded;
     next();
   } catch (error) {
     res.status(400).json({ message: 'Invalid token' });
   }
 });
-
-// Fetch secret key based on token
-function fetchSecretKeyBasedOnToken(token) {
-  return token;  // Returning the token as the secret key
-}
 
 // Route to get all notes
 router.get('/', async (req, res) => {
@@ -36,7 +31,12 @@ router.get('/', async (req, res) => {
 
 // Route to create a new note
 router.post('/', async (req, res) => {
-  await notesApi.createNote(req.body); // Pass the request and response objects to createNote
+  try {
+    const newNote = await notesApi.createNote(req.body);
+    res.status(201).json(newNote);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating note', error: error.message });
+  }
 });
 
 // Route to update a note
@@ -60,3 +60,4 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
+
