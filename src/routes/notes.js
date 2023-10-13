@@ -21,9 +21,7 @@ router.use((req, res, next) => {
 
 // Fetch secret key based on token
 function fetchSecretKeyBasedOnToken(token) {
-  // Replace this with your logic to fetch the secret key based on the token from your database or other source
-  // For simplicity, we'll assume the token itself is the secret key
-  return token;
+  return token;  // Returning the token as the secret key
 }
 
 // Route to get all notes
@@ -38,12 +36,7 @@ router.get('/', async (req, res) => {
 
 // Route to create a new note
 router.post('/', async (req, res) => {
-  try {
-    const newNote = await notesApi.createNote(req.body);
-    res.status(201).json(newNote);
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating note', error: error.message });
-  }
+  await notesApi.createNote(req.body); // Pass the request and response objects to createNote
 });
 
 // Route to update a note
