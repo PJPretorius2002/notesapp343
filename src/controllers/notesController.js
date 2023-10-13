@@ -11,7 +11,7 @@ class NotesApi {
 async createNote(req) {
   // Retrieve user from the database by email
   let userId;
-  console.log('req.user:', req.user); // Log the req.user object
+  console.log('req.user upper:', req.user); // Log the req.user object
   if (req.user) {
     userId = req.user;
   } else {
