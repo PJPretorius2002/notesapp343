@@ -10,8 +10,10 @@ class NotesApi {
 
 async createNote(req) {
   let userId;
+  console.log('req.user:', req.user);
+  console.log('req.user_id', req.user_id);
   if (req.user && req.user_id) {
-    userId = req.user.id;
+    userId = req.user_id;
   } else {
     // Handle the case where user ID is not available (e.g., user not authenticated)
     return { error: 'User not authenticated' }; // Return an error object
