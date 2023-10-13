@@ -60,7 +60,10 @@ const secretKey = 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe';
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.header('Authorization');
+  console.log('Auth Header:', authHeader);
+
   const token = authHeader && authHeader.split(' ')[1]; // Extract the token without "Bearer "
+  console.log('Extracted Token:', token);
 
   if (!token) {
     console.log('Token not provided');
@@ -73,6 +76,7 @@ const authenticateToken = (req, res, next) => {
     req.user = {
       id: decoded.user_id  // Set req.user to an object containing user_id
     };
+    console.log('req.user:', req.user);
   } catch (err) {
     console.log('Error verifying token:', err);
     return res.status(400).json({ message: 'Invalid token' });
@@ -80,6 +84,7 @@ const authenticateToken = (req, res, next) => {
 
   next();
 };
+
 
 
 
