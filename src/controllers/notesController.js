@@ -19,6 +19,9 @@ async createNote(req) {
     return { error: 'User not authenticated' }; // Return an error object
   }
 
+  console.log('req.user:', req.user); // Log the req.user object
+  console.log('req.userId:', req.userId); // Log the req.userId object
+
   const note = {
     ...req.body,
     owner_id: userId // Associate the note with the user by setting owner_id
