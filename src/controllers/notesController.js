@@ -12,7 +12,6 @@ async createNote(req) {
   // Retrieve user from the database by email
   let userId;
   console.log('req.user:', req.user); // Log the req.user object
-  console.log('req.userId:', req.user.id); // Log the req.userId object
   if (req.user) {
     userId = req.user;
   } else {
