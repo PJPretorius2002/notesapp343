@@ -57,7 +57,7 @@ async login(req, res) {
       if (validEmail && isMatch) {
         console.log('User is authenticated.');
         // Password is valid, create a JWT token
-        const token = jwt.sign({ id: user_id }, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id }, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', { expiresIn: '1h' });
         res.status(200).json({ token });
       } else {
         console.log('Invalid email or password.');
