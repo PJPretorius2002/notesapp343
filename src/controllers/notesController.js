@@ -38,10 +38,11 @@ class NotesApi {
 
 const notesApi = new NotesApi();
 const router = express.Router(); // Create a router
-const secretKey = "i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe";
+const secretKey = 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe';
 
 const authenticateToken = (req, res, next) => {
-  const token = req.header('Authorization');
+  const authHeader = req.header('Authorization');
+  const token = authHeader && authHeader.split(' ')[1]; // Extract the token without "Bearer "
   if (!token) return res.status(401).json({ message: 'Access denied' });
 
   jwt.verify(token, secretKey, (err, user) => {
