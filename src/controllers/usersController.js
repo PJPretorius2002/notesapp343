@@ -59,7 +59,8 @@ async login(req, res) {
       if (validEmail && isMatch) {
         console.log('User is authenticated.');
         // Password is valid, create a JWT token
-        const token = jwt.sign({ id: user.id }, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', { noTimestamp:true, expiresIn: '1h' });
+        const payload = { user_id: user.user_id }; // Modify this based on the correct parameter
+        const token = jwt.sign(payload, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', { noTimestamp:true, expiresIn: '1h' });
 	  console.log('Generated token:', token);
         res.status(200).json({ token });
       } else {
