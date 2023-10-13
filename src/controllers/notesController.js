@@ -12,6 +12,8 @@ async createNote(req) {
 
   // Retrieve user from the database by email
   let userId;
+  console.log('req.user:', req.user); // Log the req.user object
+  console.log('req.userId:', req.userId); // Log the req.userId object
   if (req.user && req.userId) {
     userId = req.userId;
   } else {
@@ -19,8 +21,7 @@ async createNote(req) {
     return { error: 'User not authenticated' }; // Return an error object
   }
 
-  console.log('req.user:', req.user); // Log the req.user object
-  console.log('req.userId:', req.userId); // Log the req.userId object
+
 
   const note = {
     ...req.body,
