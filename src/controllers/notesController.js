@@ -14,8 +14,8 @@ async createNote(req) {
   // Retrieve user from the database by email
   let userId;
   
-  var requser = returnUsername();
-  var requserid = returnUserId();
+  let requser = returnUsername();
+  let requserid = returnUserId();
 
   console.log('req.user:', requser);
   console.log('req.user_id', requserid);
