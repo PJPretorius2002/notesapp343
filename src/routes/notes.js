@@ -7,15 +7,26 @@ const notesApi = new NotesApi();
 
 // Middleware to authenticate users
 router.use((req, res, next) => {
+  // Get the token from the request header
   const token = req.header('Authorization');
-  console.log("Received token in notes.js:", token);
-  if (!token) return res.status(401).json({ message: 'Access denied' });
 
+  // If there is no token, return an unauthorized response
+  if (!token) {
+    return res.status(401).json({ message: 'Access denied' });
+  }
+
+  // Try to verify the token
   try {
-    const decoded = jwt.verify(token, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe'); // Change this to your actual secret key
+    // Verify the token using your secret key
+    const decoded = jwt.verify(token, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe');
+
+    // Set the user object on the request object
     req.user = decoded;
+
+    // Next middleware
     next();
   } catch (error) {
+    // If the token is invalid, return a bad request response
     res.status(400).json({ message: 'Invalid token' });
   }
 });
@@ -33,6 +44,7 @@ router.get('/', async (req, res) => {
 // Route to create a new note
 router.post("/", async (req, res) => {
   const note = req.body;
+  note.ownerId = req.user._id; // Set the ownerId to the user's id from the decoded token
   const result = await notesApi.createNote(note);
 
   if (result.error) {
@@ -46,11 +58,10 @@ router.post("/", async (req, res) => {
 // Route to update a note
 router.put('/:id', async (req, res) => {
   try {
-    // Ensure the ownerId is set to the user's id from the decoded token
     const updatedNote = await notesApi.updateNote({
       ...req.body,
       id: req.params.id,
-      ownerId: req.user._id,
+      ownerId: req.user._id, // Ensure the ownerId is set to the user's id from the decoded token
     });
     res.status(200).json(updatedNote);
   } catch (error) {

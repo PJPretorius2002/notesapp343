@@ -11,17 +11,6 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-var username;
-var userid;
-
-function returnUsername() {
-	return username;
-}
-
-function returnUserId() {
-	return userid;
-}
-
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://notesapp343-front-end-3ef1866fe1d5.herokuapp.com');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -43,11 +32,7 @@ const authenticateToken = (req, res, next) => {
       return res.status(400).json({ message: 'Invalid token' });
     }
 
-    req.user = user.user;
-    req.user_id = user.user_id;
-    username = user.user;
-    userid = user.user_id;
-
+    req.user = user;
     next();
   });
 };
