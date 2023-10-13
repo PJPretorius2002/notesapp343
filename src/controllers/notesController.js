@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const db = require('../../config/db'); // Adjust the path based on your file structure
-const server = require('../../server.js');
+const {returnUsername, returnUserId} = require('../../server.js');
 
 class NotesApi {
   async getNotes() {
@@ -14,8 +14,8 @@ async createNote(req) {
   // Retrieve user from the database by email
   let userId;
   
-  let requser = server.returnUsername();
-  let requserid = server.returnUserId();
+  let requser = returnUsername();
+  let requserid = returnUserId();
 
   console.log('req.user:', requser);
   console.log('req.user_id', requserid);
