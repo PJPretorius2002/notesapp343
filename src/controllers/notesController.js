@@ -8,7 +8,13 @@ class NotesApi {
     return notes;
   }
 
-  async createNote(note) {
+  async createNote(req) {
+    const userId = req.user.id; // Get the user ID from the request (set during authentication)
+    const note = {
+      ...req.body,
+      owner_id: userId // Associate the note with the user by setting owner_id
+    };
+
     const [newNoteId] = await db('notes').insert(note); // Adjust the table name accordingly
     const newNote = await db('notes').where('id', newNoteId).first(); // Adjust the table name accordingly
     return newNote;
@@ -33,8 +39,6 @@ class NotesApi {
 const notesApi = new NotesApi();
 const router = express.Router(); // Create a router
 
-const secretKey = "i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe";
-
 const authenticateToken = (req, res, next) => {
   const token = req.header('Authorization');
   if (!token) return res.status(401).json({ message: 'Access denied' });
@@ -54,8 +58,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const note = req.body;
-  const newNote = await notesApi.createNote(note);
+  const newNote = await notesApi.createNote(req);
   res.status(201).json(newNote);
 });
 
@@ -74,4 +77,3 @@ router.delete("/:id", async (req, res) => {
 });
 
 module.exports = router; // Export the router for use in other files
-

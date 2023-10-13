@@ -32,7 +32,11 @@ router.get('/', async (req, res) => {
 // Route to create a new note
 router.post('/', async (req, res) => {
   try {
-    const newNote = await notesApi.createNote(req.body);
+    // Set the ownerId to the user's id from the decoded token
+    const newNote = await notesApi.createNote({
+      ...req.body,
+      ownerId: req.user._id,
+    });
     res.status(201).json(newNote);
   } catch (error) {
     res.status(500).json({ message: 'Error creating note', error: error.message });
@@ -42,7 +46,12 @@ router.post('/', async (req, res) => {
 // Route to update a note
 router.put('/:id', async (req, res) => {
   try {
-    const updatedNote = await notesApi.updateNote(req.params.id, req.body);
+    // Ensure the ownerId is set to the user's id from the decoded token
+    const updatedNote = await notesApi.updateNote({
+      ...req.body,
+      id: req.params.id,
+      ownerId: req.user._id,
+    });
     res.status(200).json(updatedNote);
   } catch (error) {
     res.status(500).json({ message: 'Error updating note', error: error.message });
@@ -60,4 +69,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-
