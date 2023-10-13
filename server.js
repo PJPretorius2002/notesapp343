@@ -55,7 +55,7 @@ const PORT = process.env.PORT || 3000;
 // Use the knex instance for the database connection
 db.raw('SELECT 1+1 AS result').then(() => {
   server.listen(PORT, () => {
-    console.log(Server is listening on port ${PORT});
+    console.log('Server is listening on port ${PORT}');
   });
 }).catch((err) => {
   console.error('Error connecting to the database:', err);
