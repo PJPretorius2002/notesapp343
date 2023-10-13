@@ -45,6 +45,8 @@ async login(req, res) {
       return res.status(400).json({ message: 'Invalid email or password.' });
     }
 
+    console.log('User retrieved from the database:', user); // Log the user object
+
     // Compare the provided email with the stored email
     const validEmail = email === user.email;
 
