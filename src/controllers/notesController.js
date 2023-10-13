@@ -8,17 +8,24 @@ class NotesApi {
     return notes;
   }
 
-  async createNote(req) {
-    const userId = req.user.id; // Get the user ID from the request (set during authentication)
-    const note = {
-      ...req.body,
-      owner_id: userId // Associate the note with the user by setting owner_id
-    };
-
-    const [newNoteId] = await db('notes').insert(note); // Adjust the table name accordingly
-    const newNote = await db('notes').where('id', newNoteId).first(); // Adjust the table name accordingly
-    return newNote;
+async createNote(req) {
+  let userId;
+  if (req.user && req.user.id) {
+    userId = req.user.id;
+  } else {
+    // Handle the case where user ID is not available (e.g., user not authenticated)
+    return res.status(401).json({ message: 'User not authenticated' });
   }
+
+  const note = {
+    ...req.body,
+    owner_id: userId // Associate the note with the user by setting owner_id
+  };
+
+  const [newNoteId] = await db('notes').insert(note); // Adjust the table name accordingly
+  const newNote = await db('notes').where('id', newNoteId).first(); // Adjust the table name accordingly
+  return newNote;
+}
 
   async updateNote(note) {
     const updatedNote = await db('notes').where('id', note.id).update(note); // Adjust the table name and primary key accordingly
