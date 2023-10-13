@@ -8,31 +8,33 @@ class NotesApi {
     return notes;
   }
 
-  async createNote(req, res) {
-    try {
-      const token = req.header('Authorization');
-      const secretKey = fetchSecretKeyBasedOnToken(token);
+async createNote(req, res) {
+  try {
+    const token = req.header('Authorization');
+    const decoded = jwt.verify(token, secretKey);
 
-      jwt.verify(token, secretKey, async (err, user) => {
-        if (err) return res.status(400).json({ message: 'Invalid token' });
+    const newNote = {
+      title: req.body.title,
+      content: req.body.content,
+      category_id: req.body.categoryId,
+      owner_id: decoded._id // Assuming the decoded token has user ID in _id field
+    };
 
-        const newNote = {
-          // Assuming the request body contains the note details
-          title: req.body.title,
-          content: req.body.content,
-          category_id: req.body.categoryId,
-          owner_id: user.id // Use the user ID from the token as the owner ID
-        };
+    const [newNoteId] = await db('notes').insert(newNote);
+    const createdNote = await db('notes').where('id', newNoteId).first();
 
-        const [newNoteId] = await db('notes').insert(newNote);
-        const createdNote = await db('notes').where('id', newNoteId).first();
-
-        res.status(201).json(createdNote);
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Error creating note', error: error.message });
-    }
+    res.status(201).json(createdNote);
+  } catch (error) {
+    console.error('Error creating note:', error);
+    res.status(500).json({ message: 'Error creating note' });
   }
+}
+
+
+function fetchSecretKeyBasedOnToken(token) {
+  return token;
+}
+
 
 
   async updateNote(note) {
