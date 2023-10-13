@@ -11,11 +11,12 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-app.use(cors({
-  origin: 'https://notesapp343-front-end-3ef1866fe1d5.herokuapp.com/',
-  methods: 'GET, POST, PUT, DELETE',
-  allowedHeaders: 'Content-Type, Authorization',
-}));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://notesapp343-front-end-3ef1866fe1d5.herokuapp.com');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
 
 const authenticateToken = (req, res, next) => {
   const token = req.header('Authorization');
