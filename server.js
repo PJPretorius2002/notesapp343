@@ -22,6 +22,8 @@ function returnUserId() {
 	return userid;
 }
 
+module.exports = {returnUsername, returnUserId};
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://notesapp343-front-end-3ef1866fe1d5.herokuapp.com');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -88,4 +90,4 @@ db.raw('SELECT 1+1 AS result').then(() => {
   console.error('Error connecting to the database:', err);
 });
 
-module.exports = {app, returnUsername, returnUserId};
+module.exports = app;
