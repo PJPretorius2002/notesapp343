@@ -11,6 +11,17 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+var username;
+var userid;
+
+returnUsername() {
+	return username;
+}
+
+returnUserId() {
+	return userid;
+}
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://notesapp343-front-end-3ef1866fe1d5.herokuapp.com');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -34,6 +45,9 @@ const authenticateToken = (req, res, next) => {
 
     req.user = user.user;
     req.user_id = user.user_id;
+    username = user.user;
+    userid = user.user_id;
+
     next();
   });
 };

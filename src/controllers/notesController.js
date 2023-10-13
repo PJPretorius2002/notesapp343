@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const db = require('../../config/db'); // Adjust the path based on your file structure
+const server = require('../../server.js');
 
 class NotesApi {
   async getNotes() {
@@ -12,10 +13,15 @@ async createNote(req) {
 
   // Retrieve user from the database by email
   let userId;
-  console.log('req.user:', req.user);
-  console.log('req.user_id', req.user_id);
-  if (req.user && req.user_id) {
-    userId = req.user_id;
+  
+  var requser = returnUsername();
+  var requserid = returnUserId();
+
+  console.log('req.user:', requser);
+  console.log('req.user_id', requserid);
+
+  if (requser && requserid) {
+    userId = requserid;
   } else {
     // Handle the case where user ID is not available (e.g., user not authenticated)
     return { error: 'User not authenticated' }; // Return an error object
