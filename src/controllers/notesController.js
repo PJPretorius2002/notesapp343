@@ -9,19 +9,16 @@ class NotesApi {
   }
 
 async createNote(req) {
-
   // Retrieve user from the database by email
   let userId;
   console.log('req.user:', req.user); // Log the req.user object
   console.log('req.userId:', req.user.id); // Log the req.userId object
-  if (req.user && req.user.id) {
-    userId = req.user.id;
+  if (req.user) {
+    userId = req.user;
   } else {
     // Handle the case where user ID is not available (e.g., user not authenticated)
     return { error: 'User not authenticated' }; // Return an error object
   }
-
-
 
   const note = {
     ...req.body,
@@ -88,9 +85,6 @@ const authenticateToken = (req, res, next) => {
 
   next();
 };
-
-
-
 
 router.use(authenticateToken);
 
