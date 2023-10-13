@@ -67,19 +67,20 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ message: 'Access denied' });
   }
 
-  let decoded;
   try {
-    decoded = jwt.verify(token, secretKey);
-    console.log('Decoded token:', decoded); // Log the decoded token
+    const decoded = jwt.verify(token, secretKey);
+    console.log('Decoded token:', decoded);  // Log the decoded token
+    req.user = {
+      id: decoded.user_id  // Set req.user to an object containing user_id
+    };
   } catch (err) {
     console.log('Error verifying token:', err);
     return res.status(400).json({ message: 'Invalid token' });
   }
 
-  req.user = decoded; // Set req.user to the decoded token
-  req.user.id = decoded.user_id; // Set req.userid to the decoded token's user ID
   next();
 };
+
 
 
 router.use(authenticateToken);
