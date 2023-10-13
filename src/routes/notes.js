@@ -36,19 +36,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Route to create a new note
-router.post("/", async (req, res) => {
-  const note = req.body;
-  note.ownerId = req.user._id; // Set the ownerId to the user's id from the decoded token
-  const result = await notesApi.createNote(note);
-
-  if (result.error) {
-    return res.status(401).json({ message: result.error });
-  }
-
-  res.status(201).json(result); // Successful response
-});
-
 
 // Route to update a note
 router.put('/:id', async (req, res) => {

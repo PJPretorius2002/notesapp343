@@ -18,7 +18,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const authenticateToken = (req, res, next) => {
+  const authenticateToken = (req, res, next) => {
   const authHeader = req.header('Authorization');
   const token = authHeader && authHeader.split(' ')[1]; // Extract the token without "Bearer "
 
