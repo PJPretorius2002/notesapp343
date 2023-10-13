@@ -14,7 +14,7 @@ async createNote(req) {
     userId = req.user.id;
   } else {
     // Handle the case where user ID is not available (e.g., user not authenticated)
-    return res.status(401).json({ message: 'User not authenticated' });
+    return { error: 'User not authenticated' }; // Return an error object
   }
 
   const note = {
@@ -22,10 +22,15 @@ async createNote(req) {
     owner_id: userId // Associate the note with the user by setting owner_id
   };
 
-  const [newNoteId] = await db('notes').insert(note); // Adjust the table name accordingly
-  const newNote = await db('notes').where('id', newNoteId).first(); // Adjust the table name accordingly
-  return newNote;
+  try {
+    const [newNoteId] = await db('notes').insert(note); // Adjust the table name accordingly
+    const newNote = await db('notes').where('id', newNoteId).first(); // Adjust the table name accordingly
+    return newNote;
+  } catch (error) {
+    return { error: 'Failed to create note' }; // Return an error object in case of a database error
+  }
 }
+
 
   async updateNote(note) {
     const updatedNote = await db('notes').where('id', note.id).update(note); // Adjust the table name and primary key accordingly
