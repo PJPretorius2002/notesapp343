@@ -12,8 +12,8 @@ async createNote(req) {
 
   // Retrieve user from the database by email
   let userId;
-  if (req.user && req.userid) {
-    userId = req.userid;
+  if (req.user && req.userId) {
+    userId = req.userId;
   } else {
     // Handle the case where user ID is not available (e.g., user not authenticated)
     return { error: 'User not authenticated' }; // Return an error object
