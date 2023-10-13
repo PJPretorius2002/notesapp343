@@ -24,7 +24,10 @@ const authenticateToken = (req, res, next) => {
 
   jwt.verify(token, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', (err, user) => {
     console.log('Verifying token:', token); // Log the token being verified
-    if (err) return res.status(400).json({ message: 'Invalid token' });
+      if (err) {
+    console.log('Error verifying token:', err);
+    return res.status(400).json({ message: 'Invalid token' });
+    }
     req.user = user;
     next();
   });
