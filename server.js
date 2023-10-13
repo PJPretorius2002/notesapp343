@@ -22,8 +22,6 @@ function returnUserId() {
 	return userid;
 }
 
-module.exports = {returnUsername, returnUserId};
-
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://notesapp343-front-end-3ef1866fe1d5.herokuapp.com');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
