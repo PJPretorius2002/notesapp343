@@ -19,19 +19,24 @@ app.use((req, res, next) => {
 });
 
 const authenticateToken = (req, res, next) => {
-  const token = req.header('Authorization');
-  if (!token) return res.status(401).json({ message: 'Access denied' });
+  const authHeader = req.header('Authorization');
+  const token = authHeader && authHeader.split(' ')[1]; // Extract the token without "Bearer "
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access denied' });
+  }
 
   jwt.verify(token, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', (err, user) => {
-    console.log('Verifying token:', token); // Log the token being verified
-      if (err) {
-    console.log('Error verifying token:', err);
-    return res.status(400).json({ message: 'Invalid token' });
+    if (err) {
+      console.log('Error verifying token:', err);
+      return res.status(400).json({ message: 'Invalid token' });
     }
+
     req.user = user;
     next();
   });
 };
+
 
 app.use(express.json());
 
