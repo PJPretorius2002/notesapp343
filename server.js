@@ -7,13 +7,13 @@ const jwt = require('jsonwebtoken');
 const db = require('./config/db.js');  // Update this with the correct path
 const cors = require('cors'); // Import the cors package
 
-app.use(cors({
-  origin: 'https://notesapp343-front-end-3ef1866fe1d5.herokuapp.com/', // Replace with your front-end domain
-}));
-
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+
+app.use(cors({
+  origin: 'https://notesapp343-front-end-3ef1866fe1d5.herokuapp.com/', // Replace with your front-end domain
+}));
 
 const authenticateToken = (req, res, next) => {
   const token = req.header('Authorization');
