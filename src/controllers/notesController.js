@@ -67,6 +67,7 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ message: 'Access denied' });
   }
 
+  let decoded;
   try {
     const decoded = jwt.verify(token, secretKey);
     console.log('Decoded token:', decoded);  // Log the decoded token
@@ -78,6 +79,8 @@ const authenticateToken = (req, res, next) => {
     return res.status(400).json({ message: 'Invalid token' });
   }
 
+  req.user = decoded; // Set req.user to the decoded token
+  req.userid = decoded.user_id; // Set req.userid to the decoded token's user ID
   next();
 };
 
