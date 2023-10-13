@@ -77,6 +77,7 @@ const authenticateToken = (req, res, next) => {
       id: decoded.user_id  // Set req.user to an object containing user_id
     };
     console.log('req.user:', req.user);
+    next();
   } catch (err) {
     console.log('Error verifying token:', err);
     return res.status(400).json({ message: 'Invalid token' });
