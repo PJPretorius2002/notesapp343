@@ -9,6 +9,8 @@ class NotesApi {
   }
 
 async createNote(req) {
+
+  // Retrieve user from the database by email
   let userId;
   console.log('req.user:', req.user);
   console.log('req.user_id', req.user_id);
