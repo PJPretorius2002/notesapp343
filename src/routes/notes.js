@@ -8,6 +8,7 @@ const notesApi = new NotesApi();
 // Middleware to authenticate users
 router.use((req, res, next) => {
   const token = req.header('Authorization');
+  console.log("Received token in notes.js:", token);
   if (!token) return res.status(401).json({ message: 'Access denied' });
 
   try {
