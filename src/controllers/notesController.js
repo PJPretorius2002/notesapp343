@@ -38,6 +38,7 @@ class NotesApi {
 
 const notesApi = new NotesApi();
 const router = express.Router(); // Create a router
+const secretKey = "i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe";
 
 const authenticateToken = (req, res, next) => {
   const token = req.header('Authorization');
