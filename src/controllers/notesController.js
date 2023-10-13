@@ -10,7 +10,7 @@ class NotesApi {
 
 async createNote(req) {
   let userId;
-  if (req.user && req.user.id) {
+  if (req.user && req.user_id) {
     userId = req.user.id;
   } else {
     // Handle the case where user ID is not available (e.g., user not authenticated)
