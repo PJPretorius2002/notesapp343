@@ -13,9 +13,9 @@ async createNote(req) {
   // Retrieve user from the database by email
   let userId;
   console.log('req.user:', req.user); // Log the req.user object
-  console.log('req.userId:', req.userId); // Log the req.userId object
-  if (req.user && req.userId) {
-    userId = req.userId;
+  console.log('req.userId:', req.user.id); // Log the req.userId object
+  if (req.user && req.user.id) {
+    userId = req.user.id;
   } else {
     // Handle the case where user ID is not available (e.g., user not authenticated)
     return { error: 'User not authenticated' }; // Return an error object
@@ -71,12 +71,13 @@ const authenticateToken = (req, res, next) => {
   try {
     decoded = jwt.verify(token, secretKey);
     console.log('Decoded token:', decoded);  // Log the decoded token
+    req.user = decoded;  // Set req.user to the decoded token
+    req.user.id = decoded.user_id; // Set req.userId to the user_id from the token
   } catch (err) {
     console.log('Error verifying token:', err);
     return res.status(400).json({ message: 'Invalid token' });
   }
 
-  req.user = decoded;  // Set req.user to the decoded token
   next();
 };
 
