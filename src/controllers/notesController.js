@@ -117,4 +117,7 @@ router.delete("/:id", async (req, res) => {
   res.status(204).send();
 });
 
-module.exports = router; // Export the router for use in other files
+module.exports = {
+  authenticateToken,
+  router
+};

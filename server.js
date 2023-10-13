@@ -6,6 +6,7 @@ const usersController = require('./src/controllers/usersController');
 const jwt = require('jsonwebtoken');
 const db = require('./config/db.js');  // Update this with the correct path
 const cors = require('cors'); // Import the cors package
+const { authenticateToken } = require('./src/controllers/notesController');
 
 const app = express();
 const server = http.createServer(app);
@@ -18,28 +19,7 @@ app.use((req, res, next) => {
   next();
 });
 
-  const authenticateToken = (req, res, next) => {
-  const authHeader = req.header('Authorization');
-  const token = authHeader && authHeader.split(' ')[1]; // Extract the token without "Bearer "
-
-  if (!token) {
-    return res.status(401).json({ message: 'Access denied' });
-  }
-
-  jwt.verify(token, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', (err, user) => {
-    if (err) {
-      console.log('Server.js -> Error verifying token:', err);
-      return res.status(400).json({ message: 'Invalid token' });
-    }
-
-    req.user = user;
-    next();
-  });
-};
-
-
 app.use(express.json());
-
 app.use('/notes', authenticateToken, notesRouter);  // Use notesRouter as the notesApi
 app.use('/users', usersController);
 
