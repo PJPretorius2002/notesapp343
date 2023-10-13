@@ -55,16 +55,23 @@ const secretKey = 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe';
 const authenticateToken = (req, res, next) => {
   const authHeader = req.header('Authorization');
   const token = authHeader && authHeader.split(' ')[1]; // Extract the token without "Bearer "
-  if (!token) return res.status(401).json({ message: 'Access denied' });
 
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) { 
-      console.log('notesController.js -> Error verifying token:', err);
-	return res.status(400).json({ message: 'Invalid token' });
-    }
-    req.user = user;
-    next();
-  });
+  if (!token) {
+    console.log('Token not provided');
+    return res.status(401).json({ message: 'Access denied' });
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, secretKey);
+    console.log('Decoded token:', decoded);  // Log the decoded token
+  } catch (err) {
+    console.log('Error verifying token:', err);
+    return res.status(400).json({ message: 'Invalid token' });
+  }
+
+  req.user = decoded;  // Set req.user to the decoded token
+  next();
 };
 
 router.use(authenticateToken);
