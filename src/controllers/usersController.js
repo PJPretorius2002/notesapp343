@@ -27,7 +27,7 @@ class UsersController {
         salt: salt,  // Include the salt for logging purposes
       });
 
-      res.status(201).json({ message: 'User registered successfully' });
+      res.status(201).json({ message: 'User registered successfully', username});
     } catch (error) {
       res.status(400).json({ message: 'User registration failed', error: error.message });
     }
