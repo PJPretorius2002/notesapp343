@@ -19,20 +19,20 @@ async createCategory(req, res) {
     const userId = req.user.id;  // Assuming your token includes the user ID
 
     // Insert category details into the database, associating it with the user
-	const categoryIdArray = await knex('categories').insert({
- 	name,
- 	user_id: userId  // Associate the category with the user
+    const [categoryId] = await knex('categories').insert({
+      name,
+      user_id: userId  // Associate the category with the user
     });
 
-    const categoryId = categoryIdArray[0]; // Get the first element of the array (the inserted category_id)
     const category = await knex('categories').where({ category_id: categoryId }).first();
-    res.status(201).json({ message: 'Category created successfully'});
 
+    res.status(201).json({ message: 'Category created successfully', category });
   } catch (error) {
-    console.error('Error creating category:', error); // Log the error for debugging
+    console.error('Error creating category:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 }
+
 
 
   // Add other category-related CRUD operations as needed
