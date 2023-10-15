@@ -31,9 +31,16 @@ async createNote(req) {
 
   try {
     console.log('Attempting to insert note:', note);
-    const [newNoteId] = await db('notes').insert(note, ['note_id']);
-    const newNote = await db('notes').where('note_id', newNoteId[0].note_id).first(); // Extract the note_id
-    return newNote;
+    const newNoteIdArray = await db('notes').insert(note, ['note_id']);
+    const newNoteId = newNoteIdArray[0]?.note_id; // Extract the note_id as an integer
+
+    if (newNoteId) {
+      const newNote = await db('notes').where('note_id', newNoteId).first();
+      return newNote;
+    } else {
+      console.error('Error inserting note: newNoteId is undefined or empty');
+      return { error: 'Failed to create note' }; // Return an error object
+    }
   } catch (error) {
     console.error('Error inserting note:', error);
     return { error: 'Failed to create note' }; // Return an error object in case of a database error
