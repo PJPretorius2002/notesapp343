@@ -26,7 +26,7 @@ async createCategory(req, res) {
 
     const category = await knex('categories').where({ category_id: categoryId }).first();
 
-    res.status(201).json(category);
+    res.status(201).json([category]);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
