@@ -28,4 +28,21 @@ router.post('/register', async (req, res) => {
   }
 });
 
+router.get('/:userId', async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    // Retrieve user data from the database
+    const user = await knex('users').select('username', 'email').where('id', userId).first();
+
+    if (user) {
+      res.status(200).json({ user });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to retrieve user data', error: error.message });
+  }
+});
+
 module.exports = router;
