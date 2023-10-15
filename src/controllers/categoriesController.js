@@ -24,9 +24,10 @@ async createCategory(req, res) {
  	user_id: userId  // Associate the category with the user
     });
 
+    const categoryId = categoryIdArray[0]; // Get the first element of the array (the inserted category_id)
     const category = await knex('categories').where({ category_id: categoryId }).first();
-
     res.status(201).json({ message: 'Category created successfully'});
+
   } catch (error) {
     console.error('Error creating category:', error); // Log the error for debugging
     res.status(500).json({ message: 'Internal server error' });
