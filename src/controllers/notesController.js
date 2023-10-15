@@ -27,10 +27,14 @@ async createNote(req) {
   };
 
   try {
+    console.log('Attempting to insert note:', note);
     const [newNoteId] = await db('notes').insert(note); // Adjust the table name accordingly
+    console.log('Note inserted successfully with ID:', newNoteId);
+
     const newNote = await db('notes').where('id', newNoteId).first(); // Adjust the table name accordingly
     return newNote;
   } catch (error) {
+    console.error('Error inserting note:', error);
     return { error: 'Failed to create note' }; // Return an error object in case of a database error
   }
 }
