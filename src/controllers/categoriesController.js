@@ -28,7 +28,8 @@ async createCategory(req, res) {
 
     res.status(201).json({ message: 'Category created successfully'});
   } catch (error) {
-    res.status(400).json({ message: 'Error Creating Category'});
+    console.error('Error creating category:', error); // Log the error for debugging
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
