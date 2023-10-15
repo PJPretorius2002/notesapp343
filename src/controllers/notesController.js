@@ -109,15 +109,13 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const newNote = await notesApi.createNote(req);
-    console.log("Before sending response");
-    res.status(201).json(newNote);
-    console.log("After sending response");
+    await notesApi.createNote(req, res); // Pass res as the second argument
   } catch (error) {
     console.error('Error creating note:', error);
     res.status(500).json({ error: 'Failed to create note' });
   }
 });
+
 
 router.put("/:id", async (req, res) => {
   const id = req.params.id;
