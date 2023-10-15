@@ -96,8 +96,6 @@ const authenticateToken = (req, res, next) => {
     console.log('Error verifying token:', err);
     return res.status(400).json({ message: 'Invalid token' });
   }
-
-  next();
 };
 
 router.use(authenticateToken);
