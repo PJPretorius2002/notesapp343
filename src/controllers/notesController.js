@@ -23,7 +23,7 @@ async createNote(req) {
 
   const note = {
     ...req.body,
-    owner_id: userId // Associate the note with the user by setting owner_id
+    user_id: userId // Associate the note with the user by setting owner_id
   };
 
   try {
