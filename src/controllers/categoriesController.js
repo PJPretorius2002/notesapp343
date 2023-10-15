@@ -19,9 +19,9 @@ async createCategory(req, res) {
     const userId = req.user.id;  // Assuming your token includes the user ID
 
     // Insert category details into the database, associating it with the user
-    const [categoryId] = await knex('categories').insert({
-      name,
-      user_id: userId  // Associate the category with the user
+	const categoryIdArray = await knex('categories').insert({
+ 	name,
+ 	user_id: userId  // Associate the category with the user
     });
 
     const category = await knex('categories').where({ category_id: categoryId }).first();
