@@ -2,36 +2,6 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const knex = require('../../config/db'); // Adjust the path based on your file structure
 
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.header('Authorization');
-  console.log('Auth Header:', authHeader);
-
-  const token = authHeader && authHeader.split(' ')[1]; // Extract the token without "Bearer "
-  console.log('Extracted Token:', token);
-
-  if (!token) {
-    console.log('Token not provided');
-    return res.status(401).json({ message: 'Access denied' });
-  }
-
-  // Decode the token to inspect its structure
-  const decodedToken = jwt.decode(token);
-  console.log('Decoded token:', decodedToken);
-
-  try {
-    const decoded = jwt.verify(token, secretKey);
-    console.log('Decoded token:', decoded);  // Log the decoded token
-    req.user = {
-      id: decoded.user_id  // Set req.user to an object containing user_id
-    };
-    console.log('req.user:', req.user);
-    next();
-  } catch (err) {
-    console.log('Error verifying token:', err);
-    return res.status(400).json({ message: 'Invalid token' });
-  }
-};
-
 class CategoriesController {
 
   async getAllCategories(req, res) {
@@ -69,6 +39,36 @@ class CategoriesController {
 
 const categoriesController = new CategoriesController();
 const router = express.Router();
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.header('Authorization');
+  console.log('Auth Header:', authHeader);
+
+  const token = authHeader && authHeader.split(' ')[1]; // Extract the token without "Bearer "
+  console.log('Extracted Token:', token);
+
+  if (!token) {
+    console.log('Token not provided');
+    return res.status(401).json({ message: 'Access denied' });
+  }
+
+  // Decode the token to inspect its structure
+  const decodedToken = jwt.decode(token);
+  console.log('Decoded token:', decodedToken);
+
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    console.log('Decoded token:', decoded);  // Log the decoded token
+    req.user = {
+      id: decoded.user_id  // Set req.user to an object containing user_id
+    };
+    console.log('req.user:', req.user);
+    next();
+  } catch (err) {
+    console.log('Error verifying token:', err);
+    return res.status(400).json({ message: 'Invalid token' });
+  }
+};
 
 router.get('/', categoriesController.getAllCategories);
 router.post('/', authenticateToken, categoriesController.createCategory); // Use authenticateToken middleware
