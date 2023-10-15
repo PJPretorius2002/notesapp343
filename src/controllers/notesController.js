@@ -69,10 +69,10 @@ async updateNote(id, updatedNoteData) {
 }
 
 
-  async deleteNote(id) {
-    const deletedNote = await db('notes').where('id', id).del(); // Adjust the table name and primary key accordingly
-    return deletedNote;
-  }
+async deleteNote(id) {
+  const deletedNote = await db('notes').where('note_id', id).del(); // Adjust the table name and primary key accordingly
+  return deletedNote;
+ }
 }
 
 const notesApi = new NotesApi();
@@ -146,8 +146,17 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
-  await notesApi.deleteNote(id);
-  res.status(204).send();
+  try {
+    const deletedNote = await notesApi.deleteNote(id);
+    if (deletedNote) {
+      return res.status(204).send(); // Successfully deleted
+    } else {
+      return res.status(404).json({ error: 'Note not found' });
+    }
+  } catch (error) {
+    console.error('Error deleting note:', error);
+    return res.status(500).json({ error: 'Failed to delete note' });
+  }
 });
 
 module.exports = {
