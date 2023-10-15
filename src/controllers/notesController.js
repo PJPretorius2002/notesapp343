@@ -48,15 +48,26 @@ async createNote(req, res) {
 }
 
 
-  async updateNote(note) {
-    const updatedNote = await db('notes').where('id', note.id).update(note); // Adjust the table name and primary key accordingly
+async updateNote(id, updatedNoteData) {
+  try {
+    const updatedNote = await db('notes')
+      .where('note_id', id)
+      .update(updatedNoteData);
+
     if (updatedNote) {
-      const updatedNote = await db('notes').where('id', note.id).first(); // Adjust the table name and primary key accordingly
+      const updatedNote = await db('notes')
+        .where('note_id', id)
+        .first();
       return updatedNote;
     } else {
       return null;
     }
+  } catch (error) {
+    console.error('Error updating note:', error);
+    throw new Error('Failed to update note');
   }
+}
+
 
   async deleteNote(id) {
     const deletedNote = await db('notes').where('id', id).del(); // Adjust the table name and primary key accordingly
@@ -115,12 +126,22 @@ router.post("/", async (req, res) => {
 });
 
 
+// Update a note
 router.put("/:id", async (req, res) => {
   const id = req.params.id;
-  const note = req.body;
-  note.id = id; // Ensure the note ID is set correctly
-  const updatedNote = await notesApi.updateNote(note);
-  res.status(200).json(updatedNote);
+  const updatedNoteData = req.body; // Updated note data from the request
+
+  try {
+    const updatedNote = await notesApi.updateNote(id, updatedNoteData);
+    if (updatedNote) {
+      res.status(200).json(updatedNote);
+    } else {
+      res.status(404).json({ error: 'Note not found' });
+    }
+  } catch (error) {
+    console.error('Error updating note:', error);
+    res.status(500).json({ error: 'Failed to update note' });
+  }
 });
 
 router.delete("/:id", async (req, res) => {
