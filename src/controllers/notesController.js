@@ -14,6 +14,7 @@ async createNote(req) {
   console.log('req.user upper:', req.user); // Log the req.user object
   if (req.user && req.user.id) {
     userId = req.user.id;
+    console.log('userId:', userId); // Log the req.user object
   } else {
     // Handle the case where user ID is not available (e.g., user not authenticated)
     console.log('Yes I am the problem'); // Log the req.user object
