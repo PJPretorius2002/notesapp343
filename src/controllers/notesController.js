@@ -96,7 +96,7 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const newNote = await notesApi.createNote(req.body);
+    const newNote = await notesApi.createNote(req);
     res.status(201).json(newNote);
   } catch (error) {
     console.error('Error creating note:', error);
