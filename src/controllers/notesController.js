@@ -32,7 +32,7 @@ async createNote(req) {
   try {
     console.log('Attempting to insert note:', note);
     const [newNoteId] = await db('notes').insert(note, ['note_id']);
-    const newNote = await db('notes').where('note_id', newNoteId).first();
+    const newNote = await db('notes').where('note_id', newNoteId[0].note_id).first(); // Extract the note_id
     return newNote;
   } catch (error) {
     console.error('Error inserting note:', error);
