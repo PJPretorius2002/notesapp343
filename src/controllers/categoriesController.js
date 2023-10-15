@@ -39,6 +39,7 @@ class CategoriesController {
 
 const categoriesController = new CategoriesController();
 const router = express.Router();
+const secretKey = 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe';
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.header('Authorization');
