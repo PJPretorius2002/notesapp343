@@ -23,6 +23,9 @@ async createCategory(req, res) {
       name,
       user_id: userId  // Associate the category with the user
     });
+    console.log('Insert response:', response);
+
+
 
     // Check if categoryId is a valid number
     if (typeof categoryId !== 'number' || isNaN(categoryId)) {
