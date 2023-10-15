@@ -26,6 +26,8 @@ async createNote(req) {
     user_id: userId // Associate the note with the user by setting owner_id
   };
 
+  console.error('Error inserting note:', error);
+
   try {
     console.log('Attempting to insert note:', note);
     const [newNoteId] = await db('notes').insert(note); // Adjust the table name accordingly
