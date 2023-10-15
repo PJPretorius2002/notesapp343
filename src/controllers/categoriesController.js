@@ -73,5 +73,8 @@ const router = express.Router();
 router.get('/', categoriesController.getAllCategories);
 router.post('/', authenticateToken, categoriesController.createCategory); // Use authenticateToken middleware
 
-module.exports = router;
+module.exports = {
+  authenticateToken,
+  router
+};
 
