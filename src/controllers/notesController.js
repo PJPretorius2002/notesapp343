@@ -22,18 +22,17 @@ async createNote(req) {
   }
 
   const note = {
-    ...req.body,
-    user_id: userId // Associate the note with the user by setting owner_id
+    title: req.body.title,
+    content: req.body.content,
+    user_id: userId
   };
 
   console.log('Note object:', note);  // Log the note object
 
   try {
     console.log('Attempting to insert note:', note);
-    const [newNoteId] = await db('notes').insert(note); // Adjust the table name accordingly
-    console.log('Note inserted successfully with ID:', newNoteId);
-
-    const newNote = await db('notes').where('id', newNoteId).first(); // Adjust the table name accordingly
+    const [newNoteId] = await db('notes').insert(note, ['note_id']);
+    const newNote = await db('notes').where('note_id', newNoteId).first();
     return newNote;
   } catch (error) {
     console.error('Error inserting note:', error);
