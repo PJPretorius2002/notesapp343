@@ -13,26 +13,25 @@ class CategoriesController {
     }
   }
 
-  async createCategory(req, res) {
-    try {
-      const { name } = req.body;
+async createCategory(req, res) {
+  try {
+    const { name } = req.body;
+    const userId = req.user.id;  // Assuming your token includes the user ID
 
-      // Retrieve user ID from the token using authenticateToken middleware
-      const userId = req.user.id;  // Assuming your token includes the user ID
+    // Insert category details into the database, associating it with the user
+    const [categoryId] = await knex('categories').insert({
+      name,
+      user_id: userId  // Associate the category with the user
+    });
 
-      // Insert category details into the database, associating it with the user
-      const [categoryId] = await knex('categories').insert({
-        name,
-        user_id: userId,  // Associate the category with the user
-      });
+    const category = await knex('categories').where({ category_id: categoryId }).first();
 
-      const category = await knex('categories').where({ id: categoryId }).first();
-
-      res.status(201).json(category);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
-    }
+    res.status(201).json(category);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
+}
+
 
   // Add other category-related CRUD operations as needed
 }
