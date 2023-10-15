@@ -8,7 +8,7 @@ class NotesApi {
     return notes;
   }
 
-async createNote(req) {
+async createNote(req, res) {
   // Retrieve user from the database by email
   let userId;
   console.log('req.user upper:', req.user); // Log the req.user object
@@ -18,7 +18,7 @@ async createNote(req) {
   } else {
     // Handle the case where user ID is not available (e.g., user not authenticated)
     console.log('Yes I am the problem'); // Log the req.user object
-    return { error: 'User not authenticated' }; // Return an error object
+    return res.status(401).json({ error: 'User not authenticated' }); // Return an error response
   }
 
   const note = {
@@ -43,7 +43,7 @@ async createNote(req) {
     }
   } catch (error) {
     console.error('Error inserting note:', error);
-    return { error: 'Failed to create note' }; // Return an error object in case of a database error
+    return res.status(500).json({ error: 'Failed to create note' }); // Send an error response
   }
 }
 
