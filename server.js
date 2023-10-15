@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const { router: notesRouter, authenticateToken } = require('./src/controllers/notesController');  // Corrected import
+const { router: categoriesRouter } = require('./src/controllers/categoriesController');  // Import categories router
 const usersController = require('./src/controllers/usersController');
 const jwt = require('jsonwebtoken');
 const db = require('./config/db.js');  // Update this with the correct path
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use('/notes', authenticateToken, notesRouter);  // Use notesRouter as the notesApi
 app.use('/users', usersController);
+app.use('/categories', authenticateToken, categoriesRouter);  // Use categoriesRouter for categories routes
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API!');
