@@ -123,6 +123,25 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  try {
+    await categoriesApi.updateCategory(req, res);
+  } catch (error) {
+    console.error('Error updating category:', error);
+    res.status(500).json({ error: 'Failed to update category' });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    await categoriesApi.deleteCategory(req, res);
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    res.status(500).json({ error: 'Failed to delete category' });
+  }
+});
+
+
 module.exports = {
   authenticateToken,
   router
