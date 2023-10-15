@@ -24,7 +24,9 @@ async createCategory(req, res) {
       user_id: userId  // Associate the category with the user
     });
 
+    console.log('categoryId:', categoryId);
     const category = await knex('categories').where({ category_id: categoryId }).first();
+    console.log('category:', category);
 
     res.status(201).json({ message: 'Category created successfully', category });
   } catch (error) {
