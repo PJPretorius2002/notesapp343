@@ -36,10 +36,10 @@ async createNote(req) {
 
     if (newNoteId) {
       const newNote = await db('notes').where('note_id', newNoteId).first();
-      return newNote;
+      return res.status(201).json(newNote); // Send a success response
     } else {
       console.error('Error inserting note: newNoteId is undefined or empty');
-      return { error: 'Failed to create note' }; // Return an error object
+      return res.status(500).json({ error: 'Failed to create note' }); // Send an error response
     }
   } catch (error) {
     console.error('Error inserting note:', error);
