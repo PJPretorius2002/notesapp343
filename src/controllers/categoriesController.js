@@ -37,7 +37,47 @@ class CategoriesApi {
     }
   }
 
-  // Add other category-related CRUD operations as needed
+async updateCategory(req, res) {
+    const categoryId = req.params.id; // Get category id from request params
+    const { name } = req.body;
+
+    try {
+      const updatedRows = await db('categories')
+        .where('category_id', categoryId)
+        .update({ name });
+
+      if (updatedRows > 0) {
+        const updatedCategory = await db('categories')
+          .where('category_id', categoryId)
+          .first();
+        return res.status(200).json(updatedCategory);
+      } else {
+        return res.status(404).json({ error: 'Category not found' });
+      }
+    } catch (error) {
+      console.error('Error updating category:', error);
+      return res.status(500).json({ error: 'Failed to update category' });
+    }
+  }
+
+  async deleteCategory(req, res) {
+    const categoryId = req.params.id; // Get category id from request params
+
+    try {
+      const deletedRows = await db('categories')
+        .where('category_id', categoryId)
+        .del();
+
+      if (deletedRows > 0) {
+        return res.status(204).send(); // Successfully deleted
+      } else {
+        return res.status(404).json({ error: 'Category not found' });
+      }
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      return res.status(500).json({ error: 'Failed to delete category' });
+    }
+  } 
 }
 
 const categoriesApi = new CategoriesApi();
