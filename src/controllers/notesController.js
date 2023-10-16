@@ -210,6 +210,14 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// When a collaboration request occurs
+const collaborationRequestData = { type: 'collaborationRequest', data: 'Collaboration request data' };
+io.emit('notification', JSON.stringify(collaborationRequestData));
+
+// When a note is changed
+const updatedNoteData = { type: 'noteChanged', data: 'Updated note data' };
+io.emit('notification', JSON.stringify(updatedNoteData));
+
 module.exports = {
   authenticateToken,
   router,

@@ -181,7 +181,7 @@ async login(req, res) {
     const user = await knex('users').where({ email }).first();
 
     //FIX REMEMBER ME TIME BOOLEAN
-    const tokenExpiration = rememberMe ? 30 * 24 * 60 * 60 * 1000 : 1 * 60 * 60 * 1000;
+    const tokenExpiration = rememberMe ? null : '1h';  // Set null if rememberMe is true, else set to 1 hour
 
     if (!user) {
       console.log('User not found for email:', email);
@@ -209,7 +209,7 @@ async login(req, res) {
         const token = jwt.sign(payload, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', { noTimestamp:true, expiresIn: tokenExpiration });
         res.cookie('jwt', token, {
           httpOnly: true,
-          maxAge: tokenExpiration
+          maxAge: tokenExpiration ? null : 3600000  // Set maxAge to null if rememberMe is true, else set to 1 hour
         });
 	      console.log('Generated token:', token);
         res.status(200).json({ token , username: user.username, userId: user.user_id });
