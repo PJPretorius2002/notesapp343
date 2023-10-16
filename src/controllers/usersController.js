@@ -35,10 +35,12 @@ class UsersController {
 
 async login(req, res) {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
     // Retrieve user from the database by email
     const user = await knex('users').where({ email }).first();
+
+    const tokenExpiration = rememberMe ? '30d' : '1h';
 
     if (!user) {
       console.log('User not found for email:', email);
@@ -60,8 +62,12 @@ async login(req, res) {
         console.log('User is authenticated.');
         // Password is valid, create a JWT token
         const payload = { user_id: user.user_id }; // Modify this based on the correct parameter
-        const token = jwt.sign(payload, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', { noTimestamp:true, expiresIn: '1h' });
-	  console.log('Generated token:', token);
+        const token = jwt.sign(payload, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', { noTimestamp:true, expiresIn: tokenExpiration });
+        res.cookie('jwt', token, {
+          httpOnly: true,
+          maxAge: tokenExpiration * 24 * 60 * 60 * 1000, // in milliseconds
+        });
+	      console.log('Generated token:', token);
         res.status(200).json({ token });
       } else {
         console.log('Invalid email or password.');
