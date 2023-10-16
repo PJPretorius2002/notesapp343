@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const db = require('../../config/db'); // Adjust the path based on your file structure
 const socketIo = require('socket.io');
 const knex = require('../../config/db'); // Import knex
-const io = require('socket.io')(); // Import Socket.io
+const io = require('../../server')(); // Import Socket.io
+
 
 class NotesApi {
   async getNotes() {
