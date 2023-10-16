@@ -150,7 +150,10 @@ router.get("/", async (req, res) => {
 
   // Filter by category if requested
   if (category) {
-    notesQuery = notesQuery.where('category', category);
+    notesQuery = notesQuery
+      .join('categories', 'notes.note_id', 'categories.note_id')
+      .where('categories.category_name', category)
+      .andWhere('categories.user_id', req.user.id);
   }
 
   try {
