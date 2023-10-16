@@ -25,9 +25,17 @@ async createNote(req, res) {
     return res.status(401).json({ error: 'User not authenticated' }); // Return an error response
   }
 
+  const { title, content, category_id } = req.body;
+
+   // Check if the specified category_id exists
+   const category = await db('categories').where('category_id', category_id).first();
+   if (!category) {
+     return res.status(400).json({ error: 'Invalid category_id. Category does not exist.' });
+   }
+
   const note = {
-    title: req.body.title,
-    content: req.body.content,
+    title: title,
+    content: content,
     user_id: userId,
     category_id: req.body.category_id || null  // Include category_id if available, else null
   };
