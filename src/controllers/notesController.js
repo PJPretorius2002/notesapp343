@@ -232,5 +232,4 @@ module.exports = {
   authenticateToken,
   router,
   setupWebSocket,  // Export setupWebSocket function
-  io,
 };

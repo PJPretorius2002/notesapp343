@@ -77,4 +77,7 @@ db.raw('SELECT 1+1 AS result').then(() => {
   console.error('Error connecting to the database:', err);
 });
 
-module.exports = app;
+module.exports = {
+    app,
+    io
+};
