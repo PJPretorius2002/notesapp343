@@ -214,6 +214,7 @@ module.exports = {
   authenticateToken,
   router,
   setupWebSocket: function (io) {
+    console.log('WebSocket setup function called.'); 
     io.on('connection', (socket) => {
       console.log('a user connected');
 
