@@ -149,7 +149,7 @@ const authenticateToken = (req, res, next) => {
 router.use(authenticateToken);
 
 router.get("/", async (req, res) => {
-  const { orderBy, category } = req.query;
+  const { orderBy, category_id} = req.query;
   let userId;
 
   if (req.user && req.user.id) {
@@ -168,12 +168,9 @@ router.get("/", async (req, res) => {
     }
   }
 
-  // Filter by category if requested
-  if (category) {
-    notesQuery = notesQuery
-      .join('categories', 'notes.note_id', 'categories.note_id')
-      .where('categories.name', category)
-      .andWhere('categories.user_id', req.user.id);
+  // Filter by category_id if provided
+  if (category_id) {
+    notesQuery = notesQuery.where('category_id', category_id);
   }
 
   try {
