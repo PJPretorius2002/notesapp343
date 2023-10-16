@@ -138,8 +138,28 @@ const authenticateToken = (req, res, next) => {
 router.use(authenticateToken);
 
 router.get("/", async (req, res) => {
-  const notes = await notesApi.getNotes();
-  res.status(200).json(notes);
+  const { orderBy, category } = req.query;
+
+  let notesQuery = knex('notes');
+
+  // Order by most recently worked on if requested
+  if (orderBy === 'recent') {
+    notesQuery = notesQuery.orderBy('updated_at', 'desc');
+  }
+
+  // Filter by category if requested
+  if (category) {
+    notesQuery = notesQuery.where('category', category);
+  }
+
+  try {
+    const notes = await notesQuery;
+
+    res.status(200).json(notes);
+  } catch (error) {
+    console.error('Error fetching notes:', error);
+    res.status(500).json({ error: 'Failed to fetch notes' });
+  }
 });
 
 router.post("/", async (req, res) => {
