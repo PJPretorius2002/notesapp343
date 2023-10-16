@@ -27,11 +27,12 @@ async createNote(req, res) {
 
   const { title, content, category_id } = req.body;
 
-   // Check if the specified category_id exists
-   const category = await db('categories').where('category_id', category_id).first();
-   if (!category) {
-     return res.status(400).json({ error: 'Invalid category_id. Category does not exist.' });
-   }
+  if (category_id) {
+    const category = await db('categories').where('category_id', category_id).first();
+    if (!category) {
+      return res.status(400).json({ error: 'Invalid category_id. Category does not exist.' });
+    }
+  }
 
   const note = {
     title: title,
