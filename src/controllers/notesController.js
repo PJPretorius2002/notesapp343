@@ -1,6 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const db = require('../../config/db'); // Adjust the path based on your file structure
+const socketIo = require('socket.io');
+
+const io = socketIo();
 
 class NotesApi {
   async getNotes() {
@@ -58,6 +61,9 @@ async updateNote(id, updatedNoteData) {
       const updatedNote = await db('notes')
         .where('note_id', id)
         .first();
+
+      io.emit('note-changed', updatedNote);
+
       return updatedNote;
     } else {
       return null;
@@ -73,6 +79,26 @@ async deleteNote(id) {
   const deletedNote = await db('notes').where('note_id', id).del(); // Adjust the table name and primary key accordingly
   return deletedNote;
  }
+
+  // Function to set up the Socket.io instance
+  setupWebSocket(server) {
+    io.attach(server);  // Attach Socket.io to the HTTP server
+
+    io.on('connection', (socket) => {
+      console.log('a user connected');
+
+      // Listen for note changes
+      socket.on('note-changed', async (updatedNote) => {
+        // Assuming notesRouter handles the update functionality
+        const updatedNoteFromDb = await this.updateNote(updatedNote.id, updatedNote);  // Use this.updateNote
+        io.emit('note-updated', updatedNoteFromDb);
+      });
+
+      socket.on('disconnect', () => {
+        console.log('user disconnected');
+      });
+    });
+  }
 }
 
 const notesApi = new NotesApi();
@@ -161,5 +187,7 @@ router.delete("/:id", async (req, res) => {
 
 module.exports = {
   authenticateToken,
-  router
+  router,
+  setupWebSocket: notesApi.setupWebSocket,  // Export setupWebSocket function
+  io,
 };
