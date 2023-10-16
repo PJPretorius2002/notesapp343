@@ -3,8 +3,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../../config/db'); // Adjust the path based on your file structure
 const socketIo = require('socket.io');
 const knex = require('../../config/db'); // Import knex
-
-const io = socketIo();
+const io = require('socket.io')(); // Import Socket.io
 
 class NotesApi {
   async getNotes() {
@@ -91,25 +90,26 @@ async deleteNote(id) {
   return deletedNote;
  }
 
-  // Function to set up the Socket.io instance
-  setupWebSocket(server) {
-    io.attach(server);  // Attach Socket.io to the HTTP server
+// Function to set up the Socket.io instance
+setupWebSocket(io) {
+  io.on('connection', (socket) => {
+    console.log('a user connected');
 
-    io.on('connection', (socket) => {
-      console.log('a user connected');
-
-      // Listen for note changes
-      socket.on('note-changed', async (updatedNote) => {
-        // Assuming notesRouter handles the update functionality
+    // Listen for note changes
+    socket.on('note-changed', async (updatedNote) => {
+      try {
         const updatedNoteFromDb = await this.updateNote(updatedNote.id, updatedNote);  // Use this.updateNote
         io.emit('note-updated', updatedNoteFromDb);
-      });
-
-      socket.on('disconnect', () => {
-        console.log('user disconnected');
-      });
+      } catch (error) {
+        console.error('Error updating note:', error);
+      }
     });
-  }
+
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
+    });
+  });
+}
 }
 
 const notesApi = new NotesApi();
@@ -201,6 +201,7 @@ router.put("/:id", async (req, res) => {
   try {
     const updatedNote = await notesApi.updateNote(id, updatedNoteData);
     if (updatedNote) {
+      io.emit('note-changed', updatedNote);
       res.status(200).json(updatedNote);
     } else {
       res.status(404).json({ error: 'Note not found' });
@@ -229,6 +230,6 @@ router.delete("/:id", async (req, res) => {
 module.exports = {
   authenticateToken,
   router,
-  setupWebSocket: notesApi.setupWebSocket,  // Export setupWebSocket function
+  setupWebSocket,  // Export setupWebSocket function
   io,
 };
