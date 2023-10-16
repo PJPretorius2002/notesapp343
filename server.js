@@ -1,6 +1,6 @@
 const express = require('express');
 const http = require('http');
-const socketIo = require('socket.io-client');
+const socketIo = require('socket.io');
 const { router: notesRouter, authenticateToken: notesAuthenticateToken } = require('./src/controllers/notesController');
 const { router: categoriesRouter, authenticateToken: categoriesAuthenticateToken } = require('./src/controllers/categoriesController');
 const usersController = require('./src/controllers/usersController');
