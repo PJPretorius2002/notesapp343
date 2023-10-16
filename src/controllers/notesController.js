@@ -92,6 +92,7 @@ async deleteNote(id) {
  }
 
 // Function to set up the Socket.io instance
+
 async setupWebSocket(io) {
   io.on('connection', (socket) => {
     console.log('a user connected');
@@ -99,7 +100,7 @@ async setupWebSocket(io) {
     // Listen for note changes
     socket.on('note-changed', async (updatedNote) => {
       try {
-        const updatedNoteFromDb = await this.updateNote(updatedNote.id, updatedNote);  // Use this.updateNote
+        const updatedNoteFromDb = await this.updateNote(updatedNote.id, updatedNote);
         io.emit('note-updated', updatedNoteFromDb);
       } catch (error) {
         console.error('Error updating note:', error);
@@ -232,4 +233,5 @@ module.exports = {
   authenticateToken,
   router,
   setupWebSocket,  // Export setupWebSocket function
+  io
 };
