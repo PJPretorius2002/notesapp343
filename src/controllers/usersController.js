@@ -163,7 +163,7 @@ async login(req, res) {
           maxAge: tokenExpiration
         });
 	      console.log('Generated token:', token);
-        res.status(200).json({ token , username: user.username, userId: user.userId });
+        res.status(200).json({ token , username: user.username, userId: user.user_id });
       } else {
         console.log('Invalid email or password.');
         return res.status(400).json({ message: 'Invalid email or password.' });
