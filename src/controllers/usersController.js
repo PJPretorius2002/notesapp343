@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const knex = require('../../config/db'); // Adjust the path based on your file structure
+const { authenticateToken: categoriesAuthenticateToken } = require('../controllers/categoriesController');
 
 class UsersController {
   async register(req, res) {
@@ -32,6 +33,61 @@ class UsersController {
       res.status(400).json({ message: 'User registration failed', error: error.message });
     }
   }
+
+  async sendCollaborationRequest(req, res) {
+    try {
+      const { targetUsername } = req.body;
+      const { user_id: requesterUserId } = req.user; // Assuming you have middleware to get user_id
+
+      // Check if the target username exists
+      const targetUser = await knex('users').where('username', targetUsername).first();
+
+      if (!targetUser) {
+        return res.status(400).json({ message: 'Target user not found.' });
+      }
+
+      // Update the requester's collaboration requests
+      await knex('users')
+        .where('user_id', requesterUserId)
+        .update({
+          collaboration_requests: knex.raw('array_append(collaboration_requests, ?)', [targetUsername])
+        });
+
+      res.status(200).json({ message: 'Collaboration request sent successfully.' });
+    } catch (error) {
+      console.error('Error sending collaboration request:', error);
+      res.status(500).json({ message: 'Failed to send collaboration request.', error: error.message });
+    }
+  }
+
+  async acceptCollaborationRequest(req, res) {
+    try {
+      const { request_id } = req.params;
+      const { user_id } = req.user; // Assuming you have middleware to get user_id
+  
+      // Check if the collaboration request exists and is for the current user
+      const collaborationRequest = await knex('collaboration_requests')
+        .where('request_id', request_id)
+        .andWhere('receiver_user_id', user_id)
+        .first();
+  
+      if (!collaborationRequest) {
+        return res.status(400).json({ message: 'Collaboration request not found or not for the current user.' });
+      }
+  
+      // Update the collaboration request status to accepted
+      await knex('collaboration_requests')
+        .where('request_id', request_id)
+        .update({ status: 'accepted' });
+  
+      // You can add more logic here as needed for your application
+  
+      res.status(200).json({ message: 'Collaboration request accepted successfully.' });
+    } catch (error) {
+      console.error('Error accepting collaboration request:', error);
+      res.status(500).json({ message: 'Failed to accept collaboration request.', error: error.message });
+    }
+  }  
 
   async updateUser(req, res) {
     try {
@@ -107,7 +163,7 @@ async login(req, res) {
           maxAge: tokenExpiration
         });
 	      console.log('Generated token:', token);
-        res.status(200).json({ token , username: user.username });
+        res.status(200).json({ token , username: user.username, userId: user_id });
       } else {
         console.log('Invalid email or password.');
         return res.status(400).json({ message: 'Invalid email or password.' });
@@ -127,5 +183,7 @@ router.post('/register', usersController.register);
 router.post('/login', usersController.login);
 router.put('/:id', usersController.updateUser);
 router.delete('/:id', usersController.deleteUser);
+router.post('/collaborate/request', categoriesAuthenticateToken, usersController.sendCollaborationRequest);
+router.put('/collaborate/accept/:request_id', categoriesAuthenticateToken, usersController.acceptCollaborationRequest);
 
 module.exports = router;
