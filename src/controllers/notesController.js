@@ -217,6 +217,7 @@ module.exports = {
     console.log('WebSocket setup function called.'); 
     io.on('connection', (socket) => {
       console.log('a user connected');
+      console.log('Connection event triggered for socket:', socket.id);
 
       // Listen for note changes
       socket.on('note-changed', async (updatedNote) => {
