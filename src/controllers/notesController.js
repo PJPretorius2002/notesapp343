@@ -221,6 +221,7 @@ module.exports = {
       // Listen for note changes
       socket.on('note-changed', async (updatedNote) => {
         try {
+          console.log('Received note-changed event:', updatedNote);
           const updatedNoteFromDb = await this.updateNote(updatedNote.id, updatedNote);
           io.emit('note-updated', updatedNoteFromDb);
         } catch (error) {

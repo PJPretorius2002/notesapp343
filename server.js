@@ -15,6 +15,7 @@ const io = socketIo(server);
 
 // Setup WebSocket for notes
 setupWebSocket(io);
+console.log('WebSocket setup called');
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
