@@ -141,12 +141,22 @@ router.use(authenticateToken);
 
 router.get("/", async (req, res) => {
   const { orderBy, category } = req.query;
+  let userId;
+
+  if (req.user && req.user.id) {
+    userId = req.user.id;
+  }
 
   let notesQuery = knex('notes');
 
   // Order by most recently worked on if requested
   if (orderBy === 'recent') {
     notesQuery = notesQuery.orderBy('created_at', 'desc');
+
+    // filter by user_id
+    if (userId) {
+      notesQuery = notesQuery.where('user_id', userId);
+    }
   }
 
   // Filter by category if requested
