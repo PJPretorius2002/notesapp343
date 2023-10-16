@@ -145,7 +145,7 @@ router.get("/", async (req, res) => {
 
   // Order by most recently worked on if requested
   if (orderBy === 'recent') {
-    notesQuery = notesQuery.orderBy('updated_at', 'desc');
+    notesQuery = notesQuery.orderBy('created_at', 'desc');
   }
 
   // Filter by category if requested
