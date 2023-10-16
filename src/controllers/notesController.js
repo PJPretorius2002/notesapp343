@@ -28,7 +28,8 @@ async createNote(req, res) {
   const note = {
     title: req.body.title,
     content: req.body.content,
-    user_id: userId
+    user_id: userId,
+    category_id: req.body.category_id || null  // Include category_id if available, else null
   };
 
   console.log('Note object:', note);  // Log the note object
@@ -152,7 +153,7 @@ router.get("/", async (req, res) => {
   if (category) {
     notesQuery = notesQuery
       .join('categories', 'notes.note_id', 'categories.note_id')
-      .where('categories.category_name', category)
+      .where('categories.name', category)
       .andWhere('categories.user_id', req.user.id);
   }
 
