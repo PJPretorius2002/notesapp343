@@ -91,7 +91,7 @@ async deleteNote(id) {
  }
 
 // Function to set up the Socket.io instance
-setupWebSocket(io) {
+async setupWebSocket(io) {
   io.on('connection', (socket) => {
     console.log('a user connected');
 
