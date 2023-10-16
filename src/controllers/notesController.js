@@ -213,7 +213,7 @@ router.delete("/:id", async (req, res) => {
 module.exports = {
   authenticateToken,
   router,
-  setupWebSocket: async function (io) {
+  setupWebSocket: function (io) {
     io.on('connection', (socket) => {
       console.log('a user connected');
 
