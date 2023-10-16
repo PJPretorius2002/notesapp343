@@ -33,6 +33,42 @@ class UsersController {
     }
   }
 
+  async updateUser(req, res) {
+    try {
+      const { id } = req.params;
+      const { username, email, password } = req.body;
+
+      // Hash the password using bcrypt
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await knex('users')
+        .where({ user_id: id })
+        .update({
+          username,
+          email,
+          password_hash: hashedPassword,
+        });
+
+      res.status(200).json({ message: 'User updated successfully' });
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to update user', error: error.message });
+    }
+  }
+
+  async deleteUser(req, res) {
+    try {
+      const { id } = req.params;
+
+      await knex('users')
+        .where({ user_id: id })
+        .del();
+
+      res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+      res.status(400).json({ message: 'Failed to delete user', error: error.message });
+    }
+  }
+
 async login(req, res) {
   try {
     const { email, password, rememberMe } = req.body;
