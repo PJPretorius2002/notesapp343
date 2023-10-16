@@ -97,7 +97,10 @@ async login(req, res) {
       if (validEmail && isMatch) {
         console.log('User is authenticated.');
         // Password is valid, create a JWT token
-        const payload = { user_id: user.user_id }; // Modify this based on the correct parameter
+        const payload = {
+          user_id: user.user_id,
+          username: user.username,
+        };
         const token = jwt.sign(payload, 'i9P&k6Xn2Rr6u9P2s5v8y/B?E(H+MbQe', { noTimestamp:true, expiresIn: tokenExpiration });
         res.cookie('jwt', token, {
           httpOnly: true,
