@@ -93,25 +93,6 @@ async deleteNote(id) {
 
 // Function to set up the Socket.io instance
 
-async setupWebSocket(io) {
-  io.on('connection', (socket) => {
-    console.log('a user connected');
-
-    // Listen for note changes
-    socket.on('note-changed', async (updatedNote) => {
-      try {
-        const updatedNoteFromDb = await this.updateNote(updatedNote.id, updatedNote);
-        io.emit('note-updated', updatedNoteFromDb);
-      } catch (error) {
-        console.error('Error updating note:', error);
-      }
-    });
-
-    socket.on('disconnect', () => {
-      console.log('user disconnected');
-    });
-  });
-}
 }
 
 const notesApi = new NotesApi();
@@ -232,6 +213,24 @@ router.delete("/:id", async (req, res) => {
 module.exports = {
   authenticateToken,
   router,
-  setupWebSocket,  // Export setupWebSocket function
-  io
+  setupWebSocket: async function (io) {
+    io.on('connection', (socket) => {
+      console.log('a user connected');
+
+      // Listen for note changes
+      socket.on('note-changed', async (updatedNote) => {
+        try {
+          const updatedNoteFromDb = await this.updateNote(updatedNote.id, updatedNote);
+          io.emit('note-updated', updatedNoteFromDb);
+        } catch (error) {
+          console.error('Error updating note:', error);
+        }
+      });
+
+      socket.on('disconnect', () => {
+        console.log('user disconnected');
+      });
+    });
+  },
+  io,
 };
