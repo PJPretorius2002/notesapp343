@@ -212,7 +212,7 @@ async login(req, res) {
     const user = await knex('users').where({ email }).first();
 
     //FIX REMEMBER ME TIME BOOLEAN
-    const tokenExpiration = rememberMe ? null : '1h';  // Set null if rememberMe is true, else set to 1 hour
+    const tokenExpiration = rememberMe ? 6000000000000000000000000000000000 : '1h';  // Set null if rememberMe is true, else set to 1 hour
 
     if (!user) {
       console.log('User not found for email:', email);
@@ -267,5 +267,26 @@ router.post('/collaborate/request', categoriesAuthenticateToken, usersController
 router.put('/collaborate/accept/:request_id', categoriesAuthenticateToken, usersController.acceptCollaborationRequest);
 router.put('/collaborate/reject/:request_id', categoriesAuthenticateToken, usersController.rejectCollaborationRequest);
 router.get('/collaborate/requests', categoriesAuthenticateToken, usersController.getCollaborationRequests);
+router.post('/register/complete', async (req, res) => {
+  try {
+    const { email, activationCode } = req.body;
+
+    // Retrieve the user based on the provided email
+    const user = await knex('users').where('email', email).first();
+
+    // Check if the user and activation code match
+    if (!user || user.activation_code !== activationCode) {
+      return res.status(400).json({ message: 'Invalid activation code.' });
+    }
+
+    // Update the user's status to activated
+    await knex('users').where('email', email).update({ status: 'activated' });
+
+    res.status(200).json({ message: 'Account activated successfully.' });
+  } catch (error) {
+    res.status(400).json({ message: 'Account activation failed.', error: error.message });
+  }
+});
+
 
 module.exports = router;
