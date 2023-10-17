@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const knex = require('../../config/db'); // Adjust the path based on your file structure
 const { authenticateToken: categoriesAuthenticateToken } = require('../controllers/categoriesController');
+const sendEmail = require('./emailService');
+const crypto = require('crypto');
+
 
 class UsersController {
   async register(req, res) {
@@ -28,10 +31,38 @@ class UsersController {
         salt: salt,  // Include the salt for logging purposes
       });
 
+      await sendActivationEmail(email);
+
       res.status(201).json({ message: 'User registered successfully', username});
     } catch (error) {
       res.status(400).json({ message: 'User registration failed', error: error.message });
     }
+  }
+
+  // Helper function to generate a random 4-letter sequence
+  generateRandomSequence() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let result = '';
+  for (let i = 0; i < 4; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
+async sendActivationEmail(email) {
+  const activationCode = generateRandomSequence(); // Generate a random 4-letter sequence
+  const subject = 'Activate Your Account';
+  const html = `<p>Your activation code is: <strong>${activationCode}</strong></p>`;
+
+  await sendEmail(email, subject, html);
+  return activationCode; // Return the activation code
+}
+
+  async sendPasswordResetEmail(email) {
+    const subject = 'Password Reset Request';
+    const html = `<p>Click <a href="https://your-password-reset-url">here</a> to reset your password.</p>`;
+  
+    await sendEmail(email, subject, html);
   }
 
   async sendCollaborationRequest(req, res) {
