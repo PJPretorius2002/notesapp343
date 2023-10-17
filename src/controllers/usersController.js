@@ -31,7 +31,7 @@ class UsersController {
         salt: salt,  // Include the salt for logging purposes
       });
 
-      await sendActivationEmail(email);
+      //await sendActivationEmail(email);
 
       res.status(201).json({ message: 'User registered successfully', username});
     } catch (error) {
