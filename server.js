@@ -8,8 +8,6 @@ const { setupWebSocket } = require('./src/controllers/notesController');  // Imp
 const jwt = require('jsonwebtoken');
 const db = require('./config/db.js');
 const cors = require('cors');
-const nodemailer = require('nodemailer');
-
 
 const app = express();
 const server = http.createServer(app);
