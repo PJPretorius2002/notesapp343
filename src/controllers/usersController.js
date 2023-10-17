@@ -267,7 +267,7 @@ router.post('/collaborate/request', categoriesAuthenticateToken, usersController
 router.put('/collaborate/accept/:request_id', categoriesAuthenticateToken, usersController.acceptCollaborationRequest);
 router.put('/collaborate/reject/:request_id', categoriesAuthenticateToken, usersController.rejectCollaborationRequest);
 router.get('/collaborate/requests', categoriesAuthenticateToken, usersController.getCollaborationRequests);
-router.post('/register/complete', async (req, res) => {
+router.post('/activate', async (req, res) => {
   try {
     const { email, activationCode } = req.body;
 
